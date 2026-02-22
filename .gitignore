@@ -1,0 +1,27 @@
+# Internal skills and workflows
+/internal/
+/skills/
+/workflows/
+/experiments/
+/ci-tools/
+/mcp/
+/mock-api/
+skills-lock.json
+.agents/
+.agent/
+
+# Node.js / React defaults
+node_modules/
+dist/
+build/
+.env
+*.log
+*.tmp
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
