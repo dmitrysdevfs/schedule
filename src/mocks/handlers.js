@@ -11,6 +11,9 @@ export const handlers = [
   http.post('/api/book', async ({ request }) => {
     const data = await request.json()
     console.log('Booking received:', data)
-    return HttpResponse.json({ success: true, message: 'Invite sent' }, { status: 201 })
+    return HttpResponse.json(
+      { success: true, message: 'Invite sent' },
+      { status: 201 },
+    )
   }),
 ]

@@ -11,16 +11,17 @@ export const useBookingStore = create()(
         guests: '',
         comment: '',
       },
-      setDraft: (field, value) => 
-        set((state) => ({ 
-          draft: { ...state.draft, [field]: value } 
+      setDraft: (field, value) =>
+        set((state) => ({
+          draft: { ...state.draft, [field]: value },
         })),
-      resetDraft: () => set({ 
-        draft: { slotId: null, name: '', email: '', guests: '', comment: '' } 
-      }),
+      resetDraft: () =>
+        set({
+          draft: { slotId: null, name: '', email: '', guests: '', comment: '' },
+        }),
     }),
     {
       name: 'booking-storage',
-    }
-  )
+    },
+  ),
 )

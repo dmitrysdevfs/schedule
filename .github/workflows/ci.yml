@@ -17,6 +17,8 @@ jobs:
         run: npm test
       - name: Build project
         run: npm run build
+      - name: Run Prettier check
+        run: npx prettier --check "src/**/*.{js,jsx,ts,tsx,json,css,md}"
 
   review:
     runs-on: ubuntu-latest
