@@ -6,7 +6,7 @@ import DatePicker from './components/organisms/DatePicker'
 
 function App() {
   const [selectedSlot, setSelectedSlot] = useState(null)
-  const [selectedDayDay, setSelectedDayDay] = useState(null)
+  const [selectedDay, setSelectedDay] = useState(null)
 
   const handleSlotClick = (time) => {
     setSelectedSlot((prev) => (prev === time ? null : time))
@@ -145,10 +145,10 @@ function App() {
               </span>
               <CalendarDay
                 day="3"
-                isActive={selectedDayDay !== 3}
-                isSelected={selectedDayDay === 3}
+                isActive={selectedDay !== 3}
+                isSelected={selectedDay === 3}
                 onClick={() =>
-                  setSelectedDayDay((prev) => (prev === 3 ? null : 3))
+                  setSelectedDay((prev) => (prev === 3 ? null : 3))
                 }
               />
             </div>
@@ -159,10 +159,10 @@ function App() {
               <CalendarDay
                 day="2"
                 isToday
-                isActive={selectedDayDay !== 22}
-                isSelected={selectedDayDay === 22}
+                isActive={selectedDay !== 22}
+                isSelected={selectedDay === 22}
                 onClick={() =>
-                  setSelectedDayDay((prev) => (prev === 22 ? null : 22))
+                  setSelectedDay((prev) => (prev === 22 ? null : 22))
                 }
               />
             </div>
@@ -172,10 +172,10 @@ function App() {
               </span>
               <CalendarDay
                 day="4"
-                isActive={selectedDayDay !== 4}
-                isSelected={selectedDayDay === 4}
+                isActive={selectedDay !== 4}
+                isSelected={selectedDay === 4}
                 onClick={() =>
-                  setSelectedDayDay((prev) => (prev === 4 ? null : 4))
+                  setSelectedDay((prev) => (prev === 4 ? null : 4))
                 }
               />
             </div>

@@ -14,6 +14,15 @@ import { toZonedTime } from 'date-fns-tz'
 
 const weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 
+const getTimezoneLabel = (tz) => {
+  const labels = {
+    'Europe/Berlin': 'Central European Time',
+    CET: 'Central European Time',
+    UTC: 'Universal Coordinated Time',
+  }
+  return labels[tz] || tz
+}
+
 const DatePicker = () => {
   const { selectedDate, setSelectedDate, timezone, setTimezone } =
     useBookingStore()
@@ -150,15 +159,15 @@ const DatePicker = () => {
             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
           </svg>
           <div className="relative">
-            <div
+            <button
+              type="button"
               onClick={() => setIsTzOpen(!isTzOpen)}
-              className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+              aria-expanded={isTzOpen}
+              aria-haspopup="listbox"
+              className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity text-left text-white-100"
             >
               <span>
-                {timezone === 'Europe/Berlin' || timezone === 'CET'
-                  ? 'Central European Time'
-                  : timezone}{' '}
-                (
+                {getTimezoneLabel(timezone)} (
                 {format(
                   toZonedTime(new Date(), timezone),
                   'h:mm aaa',
@@ -178,12 +187,13 @@ const DatePicker = () => {
               >
                 <path d="M6 9l6 6 6-6" />
               </svg>
-            </div>
+            </button>
 
             {/* Timezone Dropdown */}
             {isTzOpen && (
               <div className="absolute bottom-full left-0 mb-2 w-64 bg-secondary-100 border border-white-25 rounded-xl shadow-2xl overflow-hidden z-50">
                 <button
+                  type="button"
                   onClick={() => handleTzSelect(localTz)}
                   className={clsx(
                     'w-full px-4 py-3 text-left text-sm hover:bg-secondary-800 transition-colors',
@@ -193,6 +203,7 @@ const DatePicker = () => {
                   Local Time ({localTz})
                 </button>
                 <button
+                  type="button"
                   onClick={() => handleTzSelect('Europe/Berlin')}
                   className={clsx(
                     'w-full px-4 py-3 text-left text-sm hover:bg-secondary-800 transition-colors border-t border-white-10',
@@ -205,6 +216,7 @@ const DatePicker = () => {
                   Central European Time (CET)
                 </button>
                 <button
+                  type="button"
                   onClick={() => handleTzSelect('UTC')}
                   className={clsx(
                     'w-full px-4 py-3 text-left text-sm hover:bg-secondary-800 transition-colors border-t border-white-10',
