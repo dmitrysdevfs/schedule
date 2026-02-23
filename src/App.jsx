@@ -2,10 +2,11 @@ import { useState } from 'react'
 import Button from './components/atoms/Button'
 import SlotButton from './components/atoms/SlotButton'
 import CalendarDay from './components/atoms/CalendarDay'
+import DatePicker from './components/organisms/DatePicker'
 
 function App() {
   const [selectedSlot, setSelectedSlot] = useState(null)
-  const [selectedDay, setSelectedDay] = useState(null)
+  const [selectedDayDay, setSelectedDayDay] = useState(null)
 
   const handleSlotClick = (time) => {
     setSelectedSlot((prev) => (prev === time ? null : time))
@@ -104,6 +105,16 @@ function App() {
           </p>
         </section>
 
+        {/* Date Picker Section */}
+        <section className="space-y-6">
+          <h2 className="text-xl font-medium border-b border-white-25 pb-2">
+            Date Picker (Organism)
+          </h2>
+          <div className="flex justify-center md:justify-start">
+            <DatePicker />
+          </div>
+        </section>
+
         {/* Calendar Section */}
         <section className="space-y-6">
           <h2 className="text-xl font-medium border-b border-white-25 pb-2">
@@ -134,10 +145,10 @@ function App() {
               </span>
               <CalendarDay
                 day="3"
-                isActive={selectedDay !== 3}
-                isSelected={selectedDay === 3}
+                isActive={selectedDayDay !== 3}
+                isSelected={selectedDayDay === 3}
                 onClick={() =>
-                  setSelectedDay((prev) => (prev === 3 ? null : 3))
+                  setSelectedDayDay((prev) => (prev === 3 ? null : 3))
                 }
               />
             </div>
@@ -148,10 +159,10 @@ function App() {
               <CalendarDay
                 day="2"
                 isToday
-                isActive={selectedDay !== 22}
-                isSelected={selectedDay === 22}
+                isActive={selectedDayDay !== 22}
+                isSelected={selectedDayDay === 22}
                 onClick={() =>
-                  setSelectedDay((prev) => (prev === 22 ? null : 22))
+                  setSelectedDayDay((prev) => (prev === 22 ? null : 22))
                 }
               />
             </div>
@@ -161,10 +172,10 @@ function App() {
               </span>
               <CalendarDay
                 day="4"
-                isActive={selectedDay !== 4}
-                isSelected={selectedDay === 4}
+                isActive={selectedDayDay !== 4}
+                isSelected={selectedDayDay === 4}
                 onClick={() =>
-                  setSelectedDay((prev) => (prev === 4 ? null : 4))
+                  setSelectedDayDay((prev) => (prev === 4 ? null : 4))
                 }
               />
             </div>
