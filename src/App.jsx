@@ -3,10 +3,13 @@ import Button from './components/atoms/Button'
 import SlotButton from './components/atoms/SlotButton'
 import CalendarDay from './components/atoms/CalendarDay'
 import DatePicker from './components/organisms/DatePicker'
+import { useBookingStore } from './store/useBookingStore'
 
 function App() {
+  const { selectedDate, setSelectedDate, timezone, setTimezone } =
+    useBookingStore()
   const [selectedSlot, setSelectedSlot] = useState(null)
-  const [selectedDay, setSelectedDay] = useState(null)
+  const [demoDay, setDemoDay] = useState(null)
 
   const handleSlotClick = (time) => {
     setSelectedSlot((prev) => (prev === time ? null : time))
@@ -111,7 +114,12 @@ function App() {
             Date Picker (Organism)
           </h2>
           <div className="flex justify-center md:justify-start">
-            <DatePicker />
+            <DatePicker
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              timezone={timezone}
+              setTimezone={setTimezone}
+            />
           </div>
         </section>
 
@@ -145,11 +153,9 @@ function App() {
               </span>
               <CalendarDay
                 day="3"
-                isActive={selectedDay !== 3}
-                isSelected={selectedDay === 3}
-                onClick={() =>
-                  setSelectedDay((prev) => (prev === 3 ? null : 3))
-                }
+                isActive={demoDay !== 3}
+                isSelected={demoDay === 3}
+                onClick={() => setDemoDay((prev) => (prev === 3 ? null : 3))}
               />
             </div>
             <div className="flex flex-col items-center gap-2">
@@ -159,11 +165,9 @@ function App() {
               <CalendarDay
                 day="2"
                 isToday
-                isActive={selectedDay !== 22}
-                isSelected={selectedDay === 22}
-                onClick={() =>
-                  setSelectedDay((prev) => (prev === 22 ? null : 22))
-                }
+                isActive={demoDay !== 22}
+                isSelected={demoDay === 22}
+                onClick={() => setDemoDay((prev) => (prev === 22 ? null : 22))}
               />
             </div>
             <div className="flex flex-col items-center gap-2">
@@ -172,11 +176,9 @@ function App() {
               </span>
               <CalendarDay
                 day="4"
-                isActive={selectedDay !== 4}
-                isSelected={selectedDay === 4}
-                onClick={() =>
-                  setSelectedDay((prev) => (prev === 4 ? null : 4))
-                }
+                isActive={demoDay !== 4}
+                isSelected={demoDay === 4}
+                onClick={() => setDemoDay((prev) => (prev === 4 ? null : 4))}
               />
             </div>
           </div>

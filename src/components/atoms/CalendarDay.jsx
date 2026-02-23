@@ -13,9 +13,11 @@ const CalendarDay = ({
   className,
 }) => {
   const baseClasses =
-    'w-11 h-11 flex items-center justify-center rounded-full transition-all duration-200 text-sm overflow-hidden'
+    'w-11 h-11 flex items-center justify-center rounded-full text-sm overflow-hidden'
 
   const statusClasses = clsx({
+    // Transitions for colors and background only
+    'transition-[background-color,color] duration-200': !isOutsideMonth,
     // Outside month: transparent and non-interactive
     'text-transparent cursor-default pointer-events-none': isOutsideMonth,
 
