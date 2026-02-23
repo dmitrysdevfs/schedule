@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   format,
   addMonths,
@@ -31,9 +31,22 @@ const DatePicker = () => {
 
   const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone
 
-  const calendarDays = generateCalendarMonth(
-    viewDate,
-    selectedDate ? new Date(selectedDate) : null,
+  const SUPPORTED_TIMEZONES = useMemo(
+    () => [
+      { id: localTz, label: `Local Time (${localTz})` },
+      { id: 'Europe/Berlin', label: 'Central European Time (CET)' },
+      { id: 'UTC', label: 'UTC (Universal Coordinated Time)' },
+    ],
+    [localTz],
+  )
+
+  const calendarDays = useMemo(
+    () =>
+      generateCalendarMonth(
+        viewDate,
+        selectedDate ? new Date(selectedDate) : null,
+      ),
+    [viewDate, selectedDate],
   )
 
   const handlePrevMonth = () => {
@@ -192,39 +205,23 @@ const DatePicker = () => {
             {/* Timezone Dropdown */}
             {isTzOpen && (
               <div className="absolute bottom-full left-0 mb-2 w-64 bg-secondary-100 border border-white-25 rounded-xl shadow-2xl overflow-hidden z-50">
-                <button
-                  type="button"
-                  onClick={() => handleTzSelect(localTz)}
-                  className={clsx(
-                    'w-full px-4 py-3 text-left text-sm hover:bg-secondary-800 transition-colors',
-                    { 'text-primary-100 font-bold': timezone === localTz },
-                  )}
-                >
-                  Local Time ({localTz})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleTzSelect('Europe/Berlin')}
-                  className={clsx(
-                    'w-full px-4 py-3 text-left text-sm hover:bg-secondary-800 transition-colors border-t border-white-10',
-                    {
-                      'text-primary-100 font-bold':
-                        timezone === 'Europe/Berlin' || timezone === 'CET',
-                    },
-                  )}
-                >
-                  Central European Time (CET)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleTzSelect('UTC')}
-                  className={clsx(
-                    'w-full px-4 py-3 text-left text-sm hover:bg-secondary-800 transition-colors border-t border-white-10',
-                    { 'text-primary-100 font-bold': timezone === 'UTC' },
-                  )}
-                >
-                  UTC (Universal Coordinated Time)
-                </button>
+                {SUPPORTED_TIMEZONES.map((tz) => (
+                  <button
+                    key={tz.id}
+                    type="button"
+                    onClick={() => handleTzSelect(tz.id)}
+                    className={clsx(
+                      'w-full px-4 py-3 text-left text-sm hover:bg-secondary-800 transition-colors border-t border-white-10 first:border-t-0',
+                      {
+                        'text-primary-100 font-bold':
+                          timezone === tz.id ||
+                          (tz.id === 'Europe/Berlin' && timezone === 'CET'),
+                      },
+                    )}
+                  >
+                    {tz.label}
+                  </button>
+                ))}
               </div>
             )}
           </div>
