@@ -18,42 +18,74 @@ function App() {
       <div className="w-full max-w-4xl space-y-16">
         {/* Colors Section */}
         <section className="space-y-6">
-          <h2 className="text-xl font-medium border-b border-white-25 pb-2">Refined Palette</h2>
+          <h2 className="text-xl font-medium border-b border-white-25 pb-2">
+            Refined Palette
+          </h2>
           <div className="grid grid-cols-5 gap-4">
-            <div className="h-12 bg-primary-400 rounded-lg flex items-center justify-center text-xs text-white">400</div>
-            <div className="h-12 bg-primary-300 rounded-lg flex items-center justify-center text-xs text-secondary">300</div>
-            <div className="h-12 bg-primary-200 rounded-lg flex items-center justify-center text-xs text-secondary">200</div>
-            <div className="h-12 bg-primary-100 rounded-lg flex items-center justify-center text-xs text-secondary">100</div>
-            <div className="h-12 bg-primary-50 rounded-lg flex items-center justify-center text-xs text-secondary">50</div>
+            <div className="h-12 bg-primary-400 rounded-lg flex items-center justify-center text-xs text-white">
+              400
+            </div>
+            <div className="h-12 bg-primary-300 rounded-lg flex items-center justify-center text-xs text-secondary">
+              300
+            </div>
+            <div className="h-12 bg-primary-200 rounded-lg flex items-center justify-center text-xs text-secondary">
+              200
+            </div>
+            <div className="h-12 bg-primary-100 rounded-lg flex items-center justify-center text-xs text-secondary">
+              100
+            </div>
+            <div className="h-12 bg-primary-50 rounded-lg flex items-center justify-center text-xs text-secondary">
+              50
+            </div>
           </div>
         </section>
         <section className="space-y-8">
-          <h2 className="text-xl font-medium border-b border-secondary-800 pb-2">Buttons (Pill Shape)</h2>
+          <h2 className="text-xl font-medium border-b border-secondary-800 pb-2">
+            Buttons (Pill Shape)
+          </h2>
 
           <div className="space-y-6">
-            <h3 className="text-sm text-secondary-400 uppercase tracking-widest">Big (60px)</h3>
+            <h3 className="text-sm text-secondary-400 uppercase tracking-widest">
+              Big (60px)
+            </h3>
             <div className="flex flex-wrap gap-4 items-center">
               <Button size="lg">Primary</Button>
-              <Button size="lg" variant="secondary">Secondary</Button>
-              <Button size="lg" isDisabled>Primary Disabled</Button>
-              <Button size="lg" variant="secondary" isDisabled>Secondary Disabled</Button>
+              <Button size="lg" variant="secondary">
+                Secondary
+              </Button>
+              <Button size="lg" isDisabled>
+                Primary Disabled
+              </Button>
+              <Button size="lg" variant="secondary" isDisabled>
+                Secondary Disabled
+              </Button>
             </div>
           </div>
 
           <div className="space-y-6">
-            <h3 className="text-sm text-secondary-400 uppercase tracking-widest">Small (42px)</h3>
+            <h3 className="text-sm text-secondary-400 uppercase tracking-widest">
+              Small (42px)
+            </h3>
             <div className="flex flex-wrap gap-4 items-center">
-              <Button size="md">Primary</Button>
-              <Button size="md" variant="secondary">Secondary</Button>
-              <Button size="md" isDisabled>Primary Disabled</Button>
-              <Button size="md" variant="secondary" isDisabled>Secondary Disabled</Button>
+              <Button size="sm">Primary</Button>
+              <Button size="sm" variant="secondary">
+                Secondary
+              </Button>
+              <Button size="sm" isDisabled>
+                Primary Disabled
+              </Button>
+              <Button size="sm" variant="secondary" isDisabled>
+                Secondary Disabled
+              </Button>
             </div>
           </div>
         </section>
 
         {/* Time Slots Section */}
         <section className="space-y-6">
-          <h2 className="text-xl font-medium border-b border-white-25 pb-2">Time Slots</h2>
+          <h2 className="text-xl font-medium border-b border-white-25 pb-2">
+            Time Slots
+          </h2>
           <div className="flex gap-4">
             <SlotButton
               time="09:00"
@@ -67,39 +99,73 @@ function App() {
             />
             <SlotButton time="11:00" isDisabled />
           </div>
-          <p className="text-xs text-secondary-50">Selected: {selectedSlot || 'None'}</p>
+          <p className="text-xs text-secondary-50">
+            Selected: {selectedSlot || 'None'}
+          </p>
         </section>
 
         {/* Calendar Section */}
         <section className="space-y-6">
-          <h2 className="text-xl font-medium border-b border-white-25 pb-2">Calendar Days (44x44)</h2>
+          <h2 className="text-xl font-medium border-b border-white-25 pb-2">
+            Calendar Days (44x44)
+          </h2>
           <div className="flex gap-4 p-6 bg-secondary-800 rounded-2xl inline-flex items-center">
             <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] text-secondary-50 uppercase">None</span>
-              <CalendarDay day="1" status="none" />
+              <span className="text-[10px] text-secondary-50 uppercase">
+                Outside
+              </span>
+              <CalendarDay day="31" isOutsideMonth />
             </div>
             <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] text-secondary-50 uppercase">Disabled</span>
-              <CalendarDay day="2" status="disabled" />
+              <span className="text-[10px] text-secondary-50 uppercase">
+                Disabled
+              </span>
+              <CalendarDay day="1" isDisabled />
             </div>
             <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] text-secondary-50 uppercase">Today</span>
-              <CalendarDay day="3" status="today" />
+              <span className="text-[10px] text-secondary-50 uppercase">
+                Today
+              </span>
+              <CalendarDay day="2" isToday />
             </div>
             <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] text-secondary-50 uppercase">Active</span>
+              <span className="text-[10px] text-secondary-50 uppercase">
+                Active
+              </span>
               <CalendarDay
-                day="4"
-                status={selectedDay === 4 ? 'selected' : 'active'}
-                onClick={() => setSelectedDay(prev => prev === 4 ? null : 4)}
+                day="3"
+                isActive={selectedDay !== 3}
+                isSelected={selectedDay === 3}
+                onClick={() =>
+                  setSelectedDay((prev) => (prev === 3 ? null : 3))
+                }
               />
             </div>
             <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] text-secondary-50 uppercase">Togglable</span>
+              <span className="text-[10px] text-secondary-50 uppercase">
+                Today + Sel
+              </span>
               <CalendarDay
-                day="5"
-                status={selectedDay === 5 ? 'selected' : 'active'}
-                onClick={() => setSelectedDay(prev => prev === 5 ? null : 5)}
+                day="2"
+                isToday
+                isActive={selectedDay !== 22}
+                isSelected={selectedDay === 22}
+                onClick={() =>
+                  setSelectedDay((prev) => (prev === 22 ? null : 22))
+                }
+              />
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-[10px] text-secondary-50 uppercase">
+                Selected
+              </span>
+              <CalendarDay
+                day="4"
+                isActive={selectedDay !== 4}
+                isSelected={selectedDay === 4}
+                onClick={() =>
+                  setSelectedDay((prev) => (prev === 4 ? null : 4))
+                }
               />
             </div>
           </div>

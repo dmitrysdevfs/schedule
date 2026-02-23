@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 :root {
-  font-family: 'Inter', 'Segoe UI', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family:
+    'Inter', 'Segoe UI', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -14,14 +15,11 @@
 }
 
 body {
+  @apply bg-secondary text-white-100;
   margin: 0;
   display: flex;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #0C0614;
-  /* secondary 100% */
-  color: #F4F1EB;
-  /* white 100% */
 }
 
 #root {

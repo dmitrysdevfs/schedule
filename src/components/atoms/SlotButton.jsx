@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -10,6 +11,7 @@ const SlotButton = ({
 }) => {
   return (
     <button
+      type="button"
       disabled={isDisabled}
       onClick={onClick}
       className={twMerge(
@@ -28,6 +30,14 @@ const SlotButton = ({
       {time}
     </button>
   )
+}
+
+SlotButton.propTypes = {
+  time: PropTypes.string.isRequired,
+  isSelected: PropTypes.bool,
+  isDisabled: PropTypes.bool,
+  onClick: PropTypes.func,
+  className: PropTypes.string,
 }
 
 export default SlotButton
