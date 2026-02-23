@@ -55,7 +55,7 @@ const DatePicker = () => {
   const handleNextMonth = () => setViewDate(addMonths(viewDate, 1))
 
   const handleDateClick = (date) => {
-    const dateIso = date.toISOString()
+    const dateIso = format(date, 'yyyy-MM-dd')
     if (selectedDate === dateIso) {
       setSelectedDate(null)
     } else {
@@ -137,9 +137,9 @@ const DatePicker = () => {
 
       {/* Days Grid */}
       <div className="grid grid-cols-7 gap-3 justify-items-center">
-        {calendarDays.map((day, idx) => (
+        {calendarDays.map((day) => (
           <CalendarDay
-            key={idx}
+            key={day.date.getTime()}
             day={day.dayNumber}
             isToday={day.isToday}
             isSelected={day.isSelected}
@@ -147,7 +147,7 @@ const DatePicker = () => {
             isOutsideMonth={day.isOutsideMonth}
             // Logic: Available days get bubbles (Active state). Today always has a dot.
             isActive={!day.isDisabled && !day.isOutsideMonth}
-            onClick={() => handleDateClick(day.date)}
+            onClick={() => !day.isOutsideMonth && handleDateClick(day.date)}
           />
         ))}
       </div>
@@ -213,9 +213,7 @@ const DatePicker = () => {
                     className={clsx(
                       'w-full px-4 py-3 text-left text-sm hover:bg-secondary-800 transition-colors border-t border-white-10 first:border-t-0',
                       {
-                        'text-primary-100 font-bold':
-                          timezone === tz.id ||
-                          (tz.id === 'Europe/Berlin' && timezone === 'CET'),
+                        'text-primary-100 font-bold': timezone === tz.id,
                       },
                     )}
                   >
