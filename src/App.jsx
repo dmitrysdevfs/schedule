@@ -7,14 +7,33 @@ import SlotPanel from './components/molecules/SlotPanel'
 import { useBookingStore } from './store/useBookingStore'
 import { clsx } from 'clsx'
 import { generateCalendarMonth } from './utils/calendar'
-import { SUPPORTED_TIMEZONES } from './constants/timezones'
+import { parseISO } from 'date-fns'
+
+const LAYOUT_CONFIG = {
+  BOX_WIDTH: 700,
+  BOX_MIN_HEIGHT: 586,
+  BOX_LONG_HEIGHT: 638,
+  CENTER_X_OFFSET: 138.5,
+  DIVIDER_MARGIN: 8,
+  COOKIE_SETTINGS_LEFT: 211.5,
+  TRANSITION_DURATION: 700,
+}
 
 function App() {
-  const [selectedDate, setSelectedDate] = useState(null)
-  const [viewDate, setViewDate] = useState(new Date())
-  const [timezone, setTimezone] = useState(SUPPORTED_TIMEZONES[0].id)
-  const { draft, setDraft } = useBookingStore()
+  const {
+    selectedDate,
+    setSelectedDate,
+    viewDate: viewDateIso,
+    setViewDate,
+    timezone,
+    setTimezone,
+    draft,
+    setDraft,
+  } = useBookingStore()
+
   const [demoDay, setDemoDay] = useState(null)
+
+  const viewDate = useMemo(() => parseISO(viewDateIso), [viewDateIso])
 
   // Calculate if the current viewMonth is 6-row long (March 2026, Aug 2025 etc)
   const isLongMonth = useMemo(() => {
@@ -136,9 +155,14 @@ function App() {
             {/* Unified Booking Box: 700px width, Explicit Height for transitions */}
             <div
               className={clsx(
-                'w-[700px] bg-secondary-800 rounded-3xl border border-white-25 shadow-2xl overflow-hidden relative flex flex-col items-center justify-start pt-14 pb-[66px] transition-all duration-700 ease-in-out',
-                isLongMonth ? 'h-[638px]' : 'h-[586px]',
+                'bg-secondary-800 rounded-3xl border border-white-25 shadow-2xl overflow-hidden relative flex flex-col items-center justify-start pt-14 pb-[66px] transition-all duration-700 ease-in-out',
               )}
+              style={{
+                width: `${LAYOUT_CONFIG.BOX_WIDTH}px`,
+                height: isLongMonth
+                  ? `${LAYOUT_CONFIG.BOX_LONG_HEIGHT}px`
+                  : `${LAYOUT_CONFIG.BOX_MIN_HEIGHT}px`,
+              }}
             >
               {/* Animation Wrapper for Calendar and Slots */}
               <div
@@ -147,7 +171,9 @@ function App() {
                   'w-[621px]',
                 )}
                 style={{
-                  transform: selectedDate ? 'none' : 'translateX(138.5px)',
+                  transform: selectedDate
+                    ? 'none'
+                    : `translateX(${LAYOUT_CONFIG.CENTER_X_OFFSET}px)`,
                 }}
               >
                 {/* Calendar Block (344 x dynamic) */}
@@ -200,7 +226,9 @@ function App() {
               <div
                 className="absolute bottom-[24px] transition-[left,transform] duration-700 ease-in-out z-20"
                 style={{
-                  left: selectedDate ? '211.5px' : '50%',
+                  left: selectedDate
+                    ? `${LAYOUT_CONFIG.COOKIE_SETTINGS_LEFT}px`
+                    : '50%',
                   transform: 'translateX(-50%)',
                 }}
               >

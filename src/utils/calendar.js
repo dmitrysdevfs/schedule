@@ -63,7 +63,7 @@ export const generateTimeSlots = () => {
   for (let hour = startHour; hour <= endHour; hour++) {
     for (let minute = 0; minute <= 30; minute += 30) {
       if (hour === endHour && minute > endMinute) break
-      const h = hour
+      const h = hour.toString().padStart(2, '0')
       const m = minute === 0 ? '00' : '30'
       slots.push(`${h}:${m}`)
     }

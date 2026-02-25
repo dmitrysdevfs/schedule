@@ -5,8 +5,10 @@ import Button from '../atoms/Button'
 import { format, parseISO } from 'date-fns'
 import { clsx } from 'clsx'
 
+const TIME_SLOTS = generateTimeSlots()
+
 const SlotPanel = ({ selectedDate, selectedSlot, onSlotSelect, onNext }) => {
-  const slots = generateTimeSlots()
+  const slots = TIME_SLOTS
 
   // Format date for header: "Thursday, February 12"
   const dateHeader = selectedDate
@@ -49,7 +51,7 @@ const SlotPanel = ({ selectedDate, selectedSlot, onSlotSelect, onNext }) => {
           className={clsx('w-[244px] h-[56px] transition-all duration-300', {
             'bg-grey-300 text-grey-50 cursor-not-allowed opacity-50':
               !selectedSlot,
-            'bg-primary-500 text-secondary': selectedSlot,
+            'bg-primary-100 text-secondary border-none': selectedSlot,
           })}
           disabled={!selectedSlot}
           onClick={onNext}
