@@ -6,11 +6,13 @@ import {
   subMonths,
   isSameMonth,
   startOfMonth,
+  parseISO,
 } from 'date-fns'
 import { generateCalendarMonth } from '../../utils/calendar'
 import CalendarDay from '../atoms/CalendarDay'
 import { clsx } from 'clsx'
 import { toZonedTime } from 'date-fns-tz'
+import { useBookingStore } from '../../store/useBookingStore'
 import {
   SUPPORTED_TIMEZONES,
   getTimezoneLabel,
@@ -40,12 +42,13 @@ const DatePicker = ({
   selectedDate,
   setSelectedDate,
   viewDate,
-  setViewDate,
   timezone,
   setTimezone,
-  isLong,
+  rowCount = 5,
   className,
 }) => {
+  const { setViewDate } = useBookingStore()
+
   const [isTzOpen, setIsTzOpen] = useState(false)
   const [focusedTzIndex, setFocusedTzIndex] = useState(-1)
 
@@ -65,11 +68,15 @@ const DatePicker = ({
     () =>
       generateCalendarMonth(
         viewDate,
-        selectedDate ? new Date(selectedDate) : null,
+        selectedDate ? parseISO(selectedDate) : null,
         today,
       ),
     [viewDate, selectedDate, today],
   )
+  // Only show the number of rows needed for this month (28, 35 or 42 days)
+  const visibleDays = useMemo(() => {
+    return calendarDays.slice(0, rowCount * 7)
+  }, [calendarDays, rowCount])
 
   const handlePrevMonth = () => {
     if (canGoPrev) setViewDate(subMonths(viewDate, 1))
@@ -141,7 +148,7 @@ const DatePicker = ({
   return (
     <div
       className={clsx(
-        'w-[344px] select-none transition-all duration-700 ease-in-out flex flex-col',
+        'w-full select-none transition-all duration-700 ease-in-out flex flex-col',
         className,
       )}
     >
@@ -213,36 +220,29 @@ const DatePicker = ({
         ))}
       </div>
 
-      {/* Days Grid - Animated Height Wrapper to sync vertical shift */}
       <div
         className="w-full transition-all duration-700 ease-in-out overflow-hidden"
-        style={{ height: isLong ? '304px' : '252px' }}
+        style={{
+          height: rowCount === 6 ? '304px' : rowCount === 5 ? '252px' : '200px',
+        }}
       >
         <div className="grid grid-cols-7 gap-[8px] justify-items-center">
-          {calendarDays
-            .slice(
-              0,
-              calendarDays.length > 35 &&
-                calendarDays.slice(35).every((d) => d.isOutsideMonth)
-                ? 35
-                : 42,
-            )
-            .map((day) => (
-              <CalendarDay
-                key={day.date.getTime()}
-                day={day.dayNumber}
-                isToday={day.isToday}
-                isSelected={day.isSelected}
-                isDisabled={day.isDisabled}
-                isOutsideMonth={day.isOutsideMonth}
-                isActive={!day.isDisabled && !day.isOutsideMonth}
-                onClick={() =>
-                  !day.isOutsideMonth &&
-                  !day.isDisabled &&
-                  handleDateClick(day.date)
-                }
-              />
-            ))}
+          {visibleDays.map((day) => (
+            <CalendarDay
+              key={day.date.getTime()}
+              day={day.dayNumber}
+              isToday={day.isToday}
+              isSelected={day.isSelected}
+              isDisabled={day.isDisabled}
+              isOutsideMonth={day.isOutsideMonth}
+              isActive={!day.isDisabled && !day.isOutsideMonth}
+              onClick={() =>
+                !day.isOutsideMonth &&
+                !day.isDisabled &&
+                handleDateClick(day.date)
+              }
+            />
+          ))}
         </div>
       </div>
 
@@ -342,10 +342,9 @@ DatePicker.propTypes = {
   selectedDate: PropTypes.string,
   setSelectedDate: PropTypes.func.isRequired,
   viewDate: PropTypes.instanceOf(Date).isRequired,
-  setViewDate: PropTypes.func.isRequired,
   timezone: PropTypes.string.isRequired,
   setTimezone: PropTypes.func.isRequired,
-  isLong: PropTypes.bool,
+  rowCount: PropTypes.number,
   className: PropTypes.string,
 }
 

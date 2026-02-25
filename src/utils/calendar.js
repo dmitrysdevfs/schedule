@@ -52,21 +52,43 @@ export const generateCalendarMonth = (
  * Generates an array of time slots for a given day.
  * Default range: 08:00 to 16:30 (30 min steps)
  *
- * @returns {Array} Array of strings e.g. ["8:00", "8:30", ...]
+ * @param {number} startHour - The hour to start slots from (0-23)
+ * @param {number} endHour - The hour to end slots at (0-23)
+ * @param {number} endMinute - The minute to end slots at (0 or 30)
+ * @param {number} step - The interval between slots in minutes
+ * @returns {Array} Array of strings e.g. ["08:00", "08:30", ...]
  */
-export const generateTimeSlots = () => {
+export const generateTimeSlots = (
+  startHour = 8,
+  endHour = 16,
+  endMinute = 30,
+  step = 30,
+) => {
   const slots = []
-  const startHour = 8
-  const endHour = 16
-  const endMinute = 30
 
   for (let hour = startHour; hour <= endHour; hour++) {
-    for (let minute = 0; minute <= 30; minute += 30) {
+    for (let minute = 0; minute < 60; minute += step) {
       if (hour === endHour && minute > endMinute) break
       const h = hour.toString().padStart(2, '0')
-      const m = minute === 0 ? '00' : '30'
+      const m = minute.toString().padStart(2, '0')
       slots.push(`${h}:${m}`)
     }
   }
   return slots
+}
+
+/**
+ * Calculates how many rows (weeks) are needed to display a given month in a 7-column grid.
+ *
+ * @param {Date} date - Any date within the month
+ * @returns {number} Number of rows: 4, 5 or 6
+ */
+export const getMonthRowCount = (date) => {
+  const startOfGrid = startOfWeek(startOfMonth(date), { weekStartsOn: 1 })
+  const day36 = addDays(startOfGrid, 35) // Start of the 6th week
+  const day29 = addDays(startOfGrid, 28) // Start of the 5th week
+
+  if (isSameMonth(day36, date)) return 6
+  if (isSameMonth(day29, date)) return 5
+  return 4
 }

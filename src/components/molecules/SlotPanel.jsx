@@ -1,24 +1,31 @@
+import { useMemo } from 'react'
 import PropTypes from 'prop-types'
 import SlotButton from '../atoms/SlotButton'
 import { generateTimeSlots } from '../../utils/calendar'
 import Button from '../atoms/Button'
 import { format, parseISO } from 'date-fns'
 import { clsx } from 'clsx'
-
 const TIME_SLOTS = generateTimeSlots()
 
-const SlotPanel = ({ selectedDate, selectedSlot, onSlotSelect, onNext }) => {
+const SlotPanel = ({
+  selectedDate,
+  selectedSlot,
+  onSlotSelect,
+  onNext,
+  className,
+}) => {
   const slots = TIME_SLOTS
 
   // Format date for header: "Thursday, February 12"
-  const dateHeader = selectedDate
-    ? format(parseISO(selectedDate), 'eeee, MMMM d')
-    : ''
+  const dateHeader = useMemo(() => {
+    return selectedDate ? format(parseISO(selectedDate), 'eeee, MMMM d') : ''
+  }, [selectedDate])
 
   return (
     <div
       className={clsx(
-        'w-[260px] h-full flex flex-col relative animate-in fade-in slide-in-from-right-8 duration-700 overflow-hidden',
+        'w-full h-full flex flex-col relative animate-in fade-in slide-in-from-right-8 duration-700 overflow-hidden',
+        className,
       )}
     >
       <h5 className="text-base font-medium text-white-50 h-[24px] mb-[24px]">
@@ -48,12 +55,9 @@ const SlotPanel = ({ selectedDate, selectedSlot, onSlotSelect, onNext }) => {
       <div className="absolute bottom-0 left-[8px] right-[8px] z-10 flex justify-center pb-[4px]">
         <Button
           variant="primary"
-          className={clsx('w-[244px] h-[56px] transition-all duration-300', {
-            'bg-grey-300 text-grey-50 cursor-not-allowed opacity-50':
-              !selectedSlot,
-            'bg-primary-100 text-secondary border-none': selectedSlot,
-          })}
-          disabled={!selectedSlot}
+          size="lg"
+          className="w-full transition-all duration-300"
+          isDisabled={!selectedSlot}
           onClick={onNext}
         >
           Next
@@ -68,6 +72,7 @@ SlotPanel.propTypes = {
   selectedSlot: PropTypes.string,
   onSlotSelect: PropTypes.func.isRequired,
   onNext: PropTypes.func.isRequired,
+  className: PropTypes.string,
 }
 
 export default SlotPanel

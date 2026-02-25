@@ -6,17 +6,32 @@ import DatePicker from './components/organisms/DatePicker'
 import SlotPanel from './components/molecules/SlotPanel'
 import { useBookingStore } from './store/useBookingStore'
 import { clsx } from 'clsx'
-import { generateCalendarMonth } from './utils/calendar'
+import { getMonthRowCount } from './utils/calendar'
 import { parseISO } from 'date-fns'
 
 const LAYOUT_CONFIG = {
   BOX_WIDTH: 700,
+  BOX_SHORT_HEIGHT: 534,
   BOX_MIN_HEIGHT: 586,
   BOX_LONG_HEIGHT: 638,
-  CENTER_X_OFFSET: 138.5,
+  WRAPPER_WIDTH: 621,
+  CALENDAR_WIDTH: 344,
+  get CENTER_X_OFFSET() {
+    return (this.WRAPPER_WIDTH - this.CALENDAR_WIDTH) / 2
+  },
   DIVIDER_MARGIN: 8,
   COOKIE_SETTINGS_LEFT: 211.5,
   TRANSITION_DURATION: 700,
+  getContentHeight(rows) {
+    if (rows === 6) return 520
+    if (rows === 5) return 468
+    return 416
+  },
+  getBoxHeight(rows) {
+    if (rows === 6) return this.BOX_LONG_HEIGHT
+    if (rows === 5) return this.BOX_MIN_HEIGHT
+    return this.BOX_SHORT_HEIGHT
+  },
 }
 
 function App() {
@@ -24,7 +39,6 @@ function App() {
     selectedDate,
     setSelectedDate,
     viewDate: viewDateIso,
-    setViewDate,
     timezone,
     setTimezone,
     draft,
@@ -33,15 +47,11 @@ function App() {
 
   const [demoDay, setDemoDay] = useState(null)
 
+  // Memoize viewDate once to avoid redundant parsing in children
   const viewDate = useMemo(() => parseISO(viewDateIso), [viewDateIso])
 
-  // Calculate if the current viewMonth is 6-row long (March 2026, Aug 2025 etc)
-  const isLongMonth = useMemo(() => {
-    const calendar = generateCalendarMonth(viewDate, null, new Date())
-    return (
-      calendar.length > 35 && !calendar.slice(35).every((d) => d.isOutsideMonth)
-    )
-  }, [viewDate])
+  // Calculate how many rows the current viewMonth needs (4, 5, or 6)
+  const calendarRows = useMemo(() => getMonthRowCount(viewDate), [viewDate])
 
   const handleDateSelect = (date) => {
     setSelectedDate(date)
@@ -53,7 +63,8 @@ function App() {
   }
 
   const handleNext = () => {
-    alert(`Booking for ${selectedDate} at ${draft.slotId} confirmed (mock)!`)
+    // TODO: Implement booking submission API call in Stage 6
+    console.log('Booking confirmed', { selectedDate, slot: draft.slotId })
   }
 
   return (
@@ -154,70 +165,70 @@ function App() {
           <div>
             {/* Unified Booking Box: 700px width, Explicit Height for transitions */}
             <div
-              className={clsx(
-                'bg-secondary-800 rounded-3xl border border-white-25 shadow-2xl overflow-hidden relative flex flex-col items-center justify-start pt-14 pb-[66px] transition-all duration-700 ease-in-out',
-              )}
+              className="bg-secondary-800 rounded-3xl border border-white-25 shadow-2xl overflow-hidden relative flex flex-col items-center justify-start pt-14 pb-[66px] transition-all duration-700 ease-in-out"
               style={{
                 width: `${LAYOUT_CONFIG.BOX_WIDTH}px`,
-                height: isLongMonth
-                  ? `${LAYOUT_CONFIG.BOX_LONG_HEIGHT}px`
-                  : `${LAYOUT_CONFIG.BOX_MIN_HEIGHT}px`,
+                height: `${LAYOUT_CONFIG.getBoxHeight(calendarRows)}px`,
               }}
             >
               {/* Animation Wrapper for Calendar and Slots */}
               <div
-                className={clsx(
-                  'flex items-start transition-all duration-700 ease-in-out',
-                  'w-[621px]',
-                )}
+                className="flex items-start transition-all duration-700 ease-in-out"
                 style={{
+                  width: `${LAYOUT_CONFIG.WRAPPER_WIDTH}px`,
                   transform: selectedDate
                     ? 'none'
                     : `translateX(${LAYOUT_CONFIG.CENTER_X_OFFSET}px)`,
                 }}
               >
                 {/* Calendar Block (344 x dynamic) */}
-                <div className="flex-shrink-0 w-[344px] flex flex-col">
+                <div
+                  className="flex-shrink-0 flex flex-col"
+                  style={{ width: `${LAYOUT_CONFIG.CALENDAR_WIDTH}px` }}
+                >
                   <DatePicker
                     selectedDate={selectedDate}
                     setSelectedDate={handleDateSelect}
                     viewDate={viewDate}
-                    setViewDate={setViewDate}
                     timezone={timezone}
                     setTimezone={setTimezone}
-                    isLong={isLongMonth}
-                    className="w-full"
+                    rowCount={calendarRows}
+                    className="w-[344px]"
                   />
                 </div>
 
-                {/* Vertical Divider (matches calendar block expansion) */}
+                {/* Vertical Divider (Conditional Visibility) */}
                 <div
                   className={clsx(
                     'w-[1px] bg-white-25 mx-[8px] transition-all duration-700 ease-in-out',
-                    isLongMonth ? 'h-[520px]' : 'h-[468px]',
                     {
                       'opacity-100': selectedDate,
                       'opacity-0 pointer-events-none': !selectedDate,
                     },
                   )}
+                  style={{
+                    height: `${LAYOUT_CONFIG.getContentHeight(calendarRows)}px`,
+                  }}
                 />
 
                 {/* Slot Panel Column (Synchronized Height) */}
                 <div
                   className={clsx(
                     'flex-shrink-0 w-[260px] transition-all duration-700 ease-in-out',
-                    isLongMonth ? 'h-[520px]' : 'h-[468px]',
                     selectedDate
                       ? 'opacity-100 visible'
                       : 'opacity-0 invisible pointer-events-none',
                   )}
+                  style={{
+                    height: `${LAYOUT_CONFIG.getContentHeight(calendarRows)}px`,
+                  }}
                 >
                   <SlotPanel
                     selectedDate={selectedDate}
                     selectedSlot={draft.slotId}
                     onSlotSelect={handleSlotSelect}
                     onNext={handleNext}
-                    isLong={isLongMonth}
+                    className="w-[260px]"
                   />
                 </div>
               </div>
