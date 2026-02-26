@@ -12,7 +12,6 @@ import { generateCalendarMonth } from '../../utils/calendar'
 import CalendarDay from '../atoms/CalendarDay'
 import { clsx } from 'clsx'
 import { toZonedTime } from 'date-fns-tz'
-import { useBookingStore } from '../../store/useBookingStore'
 import {
   SUPPORTED_TIMEZONES,
   getTimezoneLabel,
@@ -42,13 +41,12 @@ const DatePicker = ({
   selectedDate,
   setSelectedDate,
   viewDate,
+  setViewDate,
   timezone,
   setTimezone,
   rowCount = 5,
   className,
 }) => {
-  const { setViewDate } = useBookingStore()
-
   const [isTzOpen, setIsTzOpen] = useState(false)
   const [focusedTzIndex, setFocusedTzIndex] = useState(-1)
 
@@ -223,7 +221,8 @@ const DatePicker = ({
       <div
         className="w-full transition-all duration-700 ease-in-out overflow-hidden"
         style={{
-          height: rowCount === 6 ? '304px' : rowCount === 5 ? '252px' : '200px',
+          height:
+            rowCount === 6 ? '19rem' : rowCount === 5 ? '15.75rem' : '12.5rem',
         }}
       >
         <div className="grid grid-cols-7 gap-[8px] justify-items-center">
@@ -342,6 +341,7 @@ DatePicker.propTypes = {
   selectedDate: PropTypes.string,
   setSelectedDate: PropTypes.func.isRequired,
   viewDate: PropTypes.instanceOf(Date).isRequired,
+  setViewDate: PropTypes.func.isRequired,
   timezone: PropTypes.string.isRequired,
   setTimezone: PropTypes.func.isRequired,
   rowCount: PropTypes.number,
