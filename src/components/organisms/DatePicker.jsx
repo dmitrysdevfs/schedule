@@ -6,6 +6,7 @@ import {
   subMonths,
   isSameMonth,
   startOfMonth,
+  isSameDay,
 } from 'date-fns'
 import { generateCalendarMonth } from '../../utils/calendar'
 import CalendarDay from '../atoms/CalendarDay'
@@ -37,7 +38,6 @@ TimeDisplay.propTypes = {
 }
 
 const DatePicker = ({
-  selectedDate,
   selectedDateObj,
   setSelectedDate,
   viewDate,
@@ -78,7 +78,7 @@ const DatePicker = ({
 
   const handleDateClick = (date) => {
     const dateIso = format(date, 'yyyy-MM-dd')
-    if (selectedDate === dateIso) {
+    if (selectedDateObj && isSameDay(selectedDateObj, date)) {
       setSelectedDate(null)
     } else {
       setSelectedDate(dateIso)
@@ -332,7 +332,6 @@ const DatePicker = ({
 }
 
 DatePicker.propTypes = {
-  selectedDate: PropTypes.string,
   selectedDateObj: PropTypes.instanceOf(Date),
   setSelectedDate: PropTypes.func.isRequired,
   viewDate: PropTypes.instanceOf(Date).isRequired,

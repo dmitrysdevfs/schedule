@@ -161,7 +161,6 @@ function App() {
                 style={{ width: `${LAYOUT_CONFIG.CALENDAR_WIDTH}rem` }}
               >
                 <DatePicker
-                  selectedDate={selectedDate}
                   selectedDateObj={selectedDateObj}
                   setSelectedDate={handleDateSelect}
                   viewDate={viewDate}

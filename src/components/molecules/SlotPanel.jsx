@@ -22,7 +22,7 @@ const SlotPanel = ({
   return (
     <div
       className={clsx(
-        'w-full h-full flex flex-col relative animate-in fade-in slide-in-from-right-8 duration-700 overflow-hidden',
+        'w-full h-full flex flex-col relative animate-fade-in animate-slide-in-right overflow-hidden',
         className,
       )}
     >

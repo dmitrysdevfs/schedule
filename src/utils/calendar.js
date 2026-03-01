@@ -24,7 +24,7 @@ export const generateCalendarMonth = (
   viewDate,
   selectedDate,
   referenceDate,
-  options = { weekStartsOn: 1 },
+  options = { weekStartsOn: 1 }, // Default to Monday, but allow override
 ) => {
   const start = startOfWeek(startOfMonth(viewDate), options)
   const days = eachDayOfInterval({
@@ -85,7 +85,10 @@ export const generateTimeSlots = (
  * @param {Object} options - date-fns options (e.g. weekStartsOn)
  * @returns {number} Number of rows: 4, 5 or 6
  */
-export const getMonthRowCount = (date, options = { weekStartsOn: 1 }) => {
+export const getMonthRowCount = (
+  date,
+  options = { weekStartsOn: 1 }, // Default to Monday, but allow override
+) => {
   const startOfGrid = startOfWeek(startOfMonth(date), options)
   const day36 = addDays(startOfGrid, 35) // Start of the 6th week
   const day29 = addDays(startOfGrid, 28) // Start of the 5th week
