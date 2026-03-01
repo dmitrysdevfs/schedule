@@ -32,7 +32,7 @@ const SlotPanel = ({
 
       {/* Container for slots list and shadow */}
       <div className="flex-1 relative overflow-hidden mb-[64px]">
-        <div className="h-full overflow-y-auto pr-2 custom-scrollbar">
+        <div className="h-full overflow-y-auto pr-2 scrollbar-hide">
           <div className="grid grid-cols-1 gap-[8px] pb-12 w-[236px]">
             {slots.map((time) => (
               <SlotButton
@@ -50,11 +50,11 @@ const SlotPanel = ({
       </div>
 
       {/* Sticky Next Button */}
-      <div className="absolute bottom-0 left-[8px] right-[8px] z-10 flex justify-center pb-[4px]">
+      <div className="absolute bottom-0 left-0 right-[8px] z-10 flex justify-start pb-[4px]">
         <Button
           variant="primary"
           size="lg"
-          className="w-full transition-all duration-300"
+          className="px-[1.5rem] transition-all duration-300"
           isDisabled={!selectedSlot}
           onClick={onNext}
         >
