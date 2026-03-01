@@ -6,26 +6,7 @@ import { useBookingStore } from './store/useBookingStore'
 import { clsx } from 'clsx'
 import { getMonthRowCount } from './utils/calendar'
 import { parseISO } from 'date-fns'
-
-const LAYOUT_CONFIG = {
-  BOX_WIDTH: 43.75, // 700px
-  ROW_HEIGHT: 3.25,
-  BOX_BASE_HEIGHT: 20.375,
-  WRAPPER_WIDTH: 38.8125, // 621px
-  CALENDAR_WIDTH: 21.5, // 344px
-  get CENTER_X_OFFSET() {
-    return (this.WRAPPER_WIDTH - this.CALENDAR_WIDTH) / 2
-  },
-  DIVIDER_MARGIN: 0.5, // 8px
-  COOKIE_SETTINGS_LEFT: 13.21875, // 211.5px
-  TRANSITION_DURATION: 700,
-  getContentHeight(rows) {
-    return rows * this.ROW_HEIGHT - 0.5 + 13.5 // Adding space for header/footer inside content area
-  },
-  getBoxHeight(rows) {
-    return this.BOX_BASE_HEIGHT + rows * this.ROW_HEIGHT
-  },
-}
+import { LAYOUT_CONFIG } from './constants/layout'
 
 function App() {
   const {
@@ -183,7 +164,7 @@ function App() {
                   timezone={timezone}
                   setTimezone={setTimezone}
                   rowCount={calendarRows}
-                  className="w-[21.5rem]"
+                  className="w-[22.25rem]"
                 />
               </div>
 
