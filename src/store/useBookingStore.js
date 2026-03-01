@@ -11,6 +11,7 @@ export const useBookingStore = create()(
         guests: '',
         comment: '',
       },
+      step: 'selection', // 'selection' | 'form'
       selectedDate: null,
       viewDate: new Date().toISOString(),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -21,10 +22,12 @@ export const useBookingStore = create()(
       setSelectedDate: (date) => set({ selectedDate: date }),
       setViewDate: (date) => set({ viewDate: date.toISOString() }),
       setTimezone: (tz) => set({ timezone: tz }),
+      setStep: (step) => set({ step }),
       resetDraft: () =>
         set({
           draft: { slotId: null, name: '', email: '', guests: '', comment: '' },
           selectedDate: null,
+          step: 'selection',
         }),
     }),
     {

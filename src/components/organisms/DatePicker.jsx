@@ -146,7 +146,7 @@ const DatePicker = ({
       )}
     >
       {/* Title */}
-      <h4 className="text-[20px] font-bold text-white-100 h-[24px] mb-[24px]">
+      <h4 className="text-[20px] font-bold text-white-100 h-[24px] mb-6">
         Select a Date & Time
       </h4>
 

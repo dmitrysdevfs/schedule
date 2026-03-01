@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import DatePicker from './components/organisms/DatePicker'
 import SlotPanel from './components/molecules/SlotPanel'
-import CalendarDay from './components/atoms/CalendarDay'
 import { useBookingStore } from './store/useBookingStore'
 import { clsx } from 'clsx'
+import BookingHeader from './components/molecules/BookingHeader'
+import BookingForm from './components/organisms/BookingForm'
 import { getMonthRowCount } from './utils/calendar'
 import { parseISO } from 'date-fns'
 import { LAYOUT_CONFIG } from './constants/layout'
@@ -18,9 +19,9 @@ function App() {
     setTimezone,
     draft,
     setDraft,
+    step,
+    setStep,
   } = useBookingStore()
-
-  const [demoDay, setDemoDay] = useState(null)
 
   // Memoize dates once to avoid redundant parsing in children
   const viewDate = useMemo(() => parseISO(viewDateIso), [viewDateIso])
@@ -42,123 +43,70 @@ function App() {
   }
 
   const handleNext = () => {
+    setStep('form')
+  }
+
+  const handleBack = () => {
+    setStep('selection')
+  }
+
+  const handleConfirm = (data) => {
     // TODO: Implement booking submission API call in Stage 6
-    console.log('Booking confirmed', { selectedDate, slot: draft.slotId })
+    console.log('Booking confirmed', {
+      selectedDate,
+      slot: draft.slotId,
+      ...data,
+    })
   }
 
   return (
-    <div className="min-h-screen bg-secondary text-white-100 flex flex-col items-center justify-start p-12">
-      <h1 className="text-4xl font-bold mb-12">Emdula UI Kit</h1>
-
-      <div className="w-full max-w-4xl space-y-16">
-        {/* Colors Section */}
-        <section className="space-y-6">
-          <h2 className="text-xl font-medium border-b border-white-25 pb-2">
-            Refined Palette
-          </h2>
-          <div className="grid grid-cols-5 gap-4">
-            <div className="h-12 bg-primary-400 rounded-lg flex items-center justify-center text-xs text-white">
-              400
-            </div>
-            <div className="h-12 bg-primary-300 rounded-lg flex items-center justify-center text-xs text-secondary">
-              300
-            </div>
-            <div className="h-12 bg-primary-200 rounded-lg flex items-center justify-center text-xs text-secondary">
-              200
-            </div>
-            <div className="h-12 bg-primary-100 rounded-lg flex items-center justify-center text-xs text-secondary">
-              100
-            </div>
-            <div className="h-12 bg-primary-50 rounded-lg flex items-center justify-center text-xs text-secondary">
-              50
-            </div>
-          </div>
-        </section>
-
-        {/* Calendar Atoms Showcase */}
-        <section className="space-y-6">
-          <h2 className="text-xl font-medium border-b border-white-25 pb-2">
-            Calendar Days (44x44)
-          </h2>
-          <div className="flex gap-4 p-6 bg-secondary-800 rounded-2xl inline-flex items-center">
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] text-secondary-50 uppercase">
-                Outside
-              </span>
-              <CalendarDay day="31" isOutsideMonth />
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] text-secondary-50 uppercase">
-                Disabled
-              </span>
-              <CalendarDay day="1" isDisabled />
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] text-secondary-50 uppercase">
-                Today
-              </span>
-              <CalendarDay day="2" isToday />
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] text-secondary-50 uppercase">
-                Active
-              </span>
-              <CalendarDay
-                day="3"
-                isActive={demoDay !== 3}
-                isSelected={demoDay === 3}
-                onClick={() => setDemoDay((prev) => (prev === 3 ? null : 3))}
-              />
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] text-secondary-50 uppercase">
-                Today + Sel
-              </span>
-              <CalendarDay
-                day="2"
-                isToday
-                isActive={demoDay !== 22}
-                isSelected={demoDay === 22}
-                onClick={() => setDemoDay((prev) => (prev === 22 ? null : 22))}
-              />
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] text-secondary-50 uppercase">
-                Selected
-              </span>
-              <CalendarDay
-                day="4"
-                isActive={demoDay !== 4}
-                isSelected={demoDay === 4}
-                onClick={() => setDemoDay((prev) => (prev === 4 ? null : 4))}
-              />
-            </div>
-          </div>
-        </section>
-
+    <div className="min-h-screen bg-secondary text-white-100 flex flex-col items-center justify-center p-12">
+      <div className="w-full max-w-4xl">
         {/* Booking Experience Section - High Fidelity */}
         <section className="space-y-8 flex flex-col items-center">
           <div
-            className="bg-secondary-800 rounded-3xl border border-white-25 shadow-2xl overflow-hidden relative flex flex-col items-center justify-start pt-14 pb-[66px] transition-all duration-700 ease-in-out"
+            className={clsx(
+              'bg-secondary-800 rounded-3xl border border-white-25 shadow-2xl overflow-hidden relative flex flex-col items-center justify-start pt-8 transition-all duration-700 ease-in-out',
+              step === 'form' ? 'pb-[66px]' : 'pb-[18px]',
+            )}
             style={{
               width: `${LAYOUT_CONFIG.BOX_WIDTH}rem`,
-              height: `${LAYOUT_CONFIG.getBoxHeight(calendarRows)}rem`,
+              height:
+                step === 'form'
+                  ? 'unset'
+                  : `${LAYOUT_CONFIG.getBoxHeight(calendarRows)}rem`,
             }}
           >
+            {/* Persistent Header - Full Width Divider */}
+            <div className="w-full">
+              <BookingHeader
+                step={step}
+                date={selectedDateObj}
+                slot={draft.slotId}
+                timezone={timezone}
+              />
+            </div>
+
             {/* Animation Wrapper for Calendar and Slots */}
             <div
               className="flex items-start transition-all duration-700 ease-in-out"
               style={{
                 width: `${LAYOUT_CONFIG.WRAPPER_WIDTH}rem`,
-                transform: selectedDate
-                  ? 'none'
-                  : `translateX(${LAYOUT_CONFIG.CENTER_X_OFFSET}rem)`,
+                transform:
+                  step === 'form'
+                    ? `translateX(-${LAYOUT_CONFIG.WRAPPER_WIDTH + (LAYOUT_CONFIG.BOX_WIDTH - LAYOUT_CONFIG.WRAPPER_WIDTH) / 2}rem)`
+                    : selectedDate
+                      ? 'none'
+                      : `translateX(${LAYOUT_CONFIG.CENTER_X_OFFSET}rem)`,
               }}
             >
               {/* Calendar Block (344 x dynamic) */}
               <div
                 className="flex-shrink-0 flex flex-col"
-                style={{ width: `${LAYOUT_CONFIG.CALENDAR_WIDTH}rem` }}
+                style={{
+                  width: `${LAYOUT_CONFIG.CALENDAR_WIDTH}rem`,
+                  ...(step === 'form' ? { height: 0, overflow: 'hidden' } : {}),
+                }}
               >
                 <DatePicker
                   selectedDateObj={selectedDateObj}
@@ -168,34 +116,40 @@ function App() {
                   timezone={timezone}
                   setTimezone={setTimezone}
                   rowCount={calendarRows}
-                  className="w-[22.25rem]"
+                  className="w-[22.25rem] pt-[1.75rem]"
                 />
               </div>
 
-              {/* Vertical Divider (Conditional Visibility) */}
+              {/* Vertical Divider */}
               <div
                 className={clsx(
-                  'w-[1px] bg-white-25 mx-[0.5rem] transition-all duration-700 ease-in-out',
-                  {
-                    'opacity-100': selectedDate,
-                    'opacity-0 pointer-events-none': !selectedDate,
-                  },
+                  'w-[1px] bg-white-25 flex-shrink-0 mx-[0.5rem] mt-[1.75rem] transition-all duration-700 ease-in-out',
+                  selectedDate && step !== 'form'
+                    ? 'opacity-100'
+                    : 'opacity-0 pointer-events-none',
                 )}
-                style={{
-                  height: `${LAYOUT_CONFIG.getContentHeight(calendarRows)}rem`,
-                }}
+                style={
+                  step === 'form'
+                    ? {}
+                    : {
+                        height: `${LAYOUT_CONFIG.getContentHeight(calendarRows) - 1.75}rem`,
+                      }
+                }
               />
 
               {/* Slot Panel Column (Synchronized Height) */}
               <div
                 className={clsx(
-                  'flex-shrink-0 w-[16.25rem] transition-all duration-700 ease-in-out',
-                  selectedDate
+                  'flex-shrink-0 w-[16.25rem] overflow-hidden transition-opacity duration-700 ease-in-out',
+                  selectedDate && step !== 'form'
                     ? 'opacity-100 visible'
                     : 'opacity-0 invisible pointer-events-none',
                 )}
                 style={{
-                  height: `${LAYOUT_CONFIG.getContentHeight(calendarRows)}rem`,
+                  height:
+                    step === 'form'
+                      ? 0
+                      : `${LAYOUT_CONFIG.getContentHeight(calendarRows)}rem`,
                 }}
               >
                 <SlotPanel
@@ -203,8 +157,24 @@ function App() {
                   selectedSlot={draft.slotId}
                   onSlotSelect={handleSlotSelect}
                   onNext={handleNext}
-                  className="w-[16.25rem]"
+                  className="w-[16.25rem] pt-[1.75rem]"
                 />
+              </div>
+
+              {/* Booking Form View (Sliding from Right) */}
+              <div
+                className={clsx(
+                  'flex-shrink-0 w-[43.75rem] transition-all duration-700 ease-in-out px-8 pt-[1.75rem]',
+                  step === 'form'
+                    ? 'opacity-100 visible'
+                    : 'opacity-0 invisible pointer-events-none',
+                )}
+              >
+                {selectedDateObj && draft.slotId && (
+                  <div className="flex flex-col items-center w-full">
+                    <BookingForm onBack={handleBack} onSubmit={handleConfirm} />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -212,10 +182,10 @@ function App() {
             <div
               className={clsx(
                 'absolute bottom-[24px] transition-[left,transform] duration-700 ease-in-out z-20 -translate-x-1/2',
-                !selectedDate && 'left-1/2',
+                (step === 'form' || !selectedDate) && 'left-1/2',
               )}
               style={
-                selectedDate
+                selectedDate && step !== 'form'
                   ? { left: `${LAYOUT_CONFIG.COOKIE_SETTINGS_LEFT}rem` }
                   : {}
               }
