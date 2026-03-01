@@ -5,7 +5,7 @@ import InputField from '../atoms/InputField'
 import TextArea from '../atoms/TextArea'
 import Button from '../atoms/Button'
 
-const BookingForm = ({ onBack, onSubmit }) => {
+const BookingForm = ({ onBack, onSubmit, isLoading, mutationError }) => {
   const { draft, setDraft } = useBookingStore()
   const [errors, setErrors] = useState({})
   const [showGuests, setShowGuests] = useState(false)
@@ -38,7 +38,7 @@ const BookingForm = ({ onBack, onSubmit }) => {
   }
 
   const handleScheduleId = () => {
-    if (validate()) {
+    if (!isLoading && validate()) {
       onSubmit(draft)
     }
   }
@@ -101,17 +101,25 @@ const BookingForm = ({ onBack, onSubmit }) => {
               size="sm"
               onClick={handleScheduleId}
               className="px-[1.125rem]"
+              isLoading={isLoading}
             >
-              Schedule Event
+              {isLoading ? 'Scheduling…' : 'Schedule Event'}
             </Button>
 
             <button
               onClick={onBack}
-              className="text-white-50 text-[14px] hover:text-white-100 underline transition-colors"
+              disabled={isLoading}
+              className="text-white-50 text-[14px] hover:text-white-100 underline transition-colors disabled:opacity-40 disabled:pointer-events-none"
             >
               Back
             </button>
           </div>
+
+          {mutationError && (
+            <p className="text-red-400 text-[13px] leading-[18px] mt-1">
+              {mutationError}
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -121,6 +129,8 @@ const BookingForm = ({ onBack, onSubmit }) => {
 BookingForm.propTypes = {
   onBack: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool,
+  mutationError: PropTypes.string,
 }
 
 export default BookingForm

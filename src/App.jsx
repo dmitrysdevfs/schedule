@@ -1,13 +1,25 @@
 import { useMemo } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import DatePicker from './components/organisms/DatePicker'
 import SlotPanel from './components/molecules/SlotPanel'
 import { useBookingStore } from './store/useBookingStore'
 import { clsx } from 'clsx'
 import BookingHeader from './components/molecules/BookingHeader'
 import BookingForm from './components/organisms/BookingForm'
+import SuccessScreen from './components/organisms/SuccessScreen'
 import { getMonthRowCount } from './utils/calendar'
 import { parseISO } from 'date-fns'
 import { LAYOUT_CONFIG } from './constants/layout'
+
+async function postBooking(payload) {
+  const res = await fetch('/api/book', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!res.ok) throw new Error('Booking failed. Please try again.')
+  return res.json()
+}
 
 function App() {
   const {
@@ -21,6 +33,7 @@ function App() {
     setDraft,
     step,
     setStep,
+    resetDraft,
   } = useBookingStore()
 
   // Memoize dates once to avoid redundant parsing in children
@@ -32,6 +45,13 @@ function App() {
 
   // Calculate how many rows the current viewMonth needs (4, 5, or 6)
   const calendarRows = useMemo(() => getMonthRowCount(viewDate), [viewDate])
+
+  const bookingMutation = useMutation({
+    mutationFn: postBooking,
+    onSuccess: () => {
+      setStep('success')
+    },
+  })
 
   const handleDateSelect = (date) => {
     setSelectedDate(date)
@@ -47,17 +67,24 @@ function App() {
   }
 
   const handleBack = () => {
+    bookingMutation.reset()
     setStep('selection')
   }
 
   const handleConfirm = (data) => {
-    // TODO: Implement booking submission API call in Stage 6
-    console.log('Booking confirmed', {
+    bookingMutation.mutate({
       selectedDate,
       slot: draft.slotId,
       ...data,
     })
   }
+
+  const handleBookAnother = () => {
+    bookingMutation.reset()
+    resetDraft()
+  }
+
+  const isNonSelectionStep = step === 'form' || step === 'success'
 
   return (
     <div className="min-h-screen bg-secondary text-white-100 flex flex-col items-center justify-center p-12">
@@ -67,37 +94,37 @@ function App() {
           <div
             className={clsx(
               'bg-secondary-800 rounded-3xl border border-white-25 shadow-2xl overflow-hidden relative flex flex-col items-center justify-start pt-8 transition-all duration-700 ease-in-out',
-              step === 'form' ? 'pb-[66px]' : 'pb-[18px]',
+              isNonSelectionStep ? 'pb-[66px]' : 'pb-[18px]',
             )}
             style={{
               width: `${LAYOUT_CONFIG.BOX_WIDTH}rem`,
-              height:
-                step === 'form'
-                  ? 'unset'
-                  : `${LAYOUT_CONFIG.getBoxHeight(calendarRows)}rem`,
+              height: isNonSelectionStep
+                ? 'unset'
+                : `${LAYOUT_CONFIG.getBoxHeight(calendarRows)}rem`,
             }}
           >
-            {/* Persistent Header - Full Width Divider */}
-            <div className="w-full">
-              <BookingHeader
-                step={step}
-                date={selectedDateObj}
-                slot={draft.slotId}
-                timezone={timezone}
-              />
-            </div>
+            {/* Persistent Header - Hidden on success step */}
+            {step !== 'success' && (
+              <div className="w-full">
+                <BookingHeader
+                  step={step}
+                  date={selectedDateObj}
+                  slot={draft.slotId}
+                  timezone={timezone}
+                />
+              </div>
+            )}
 
             {/* Animation Wrapper for Calendar and Slots */}
             <div
               className="flex items-start transition-all duration-700 ease-in-out"
               style={{
                 width: `${LAYOUT_CONFIG.WRAPPER_WIDTH}rem`,
-                transform:
-                  step === 'form'
-                    ? `translateX(-${LAYOUT_CONFIG.WRAPPER_WIDTH + (LAYOUT_CONFIG.BOX_WIDTH - LAYOUT_CONFIG.WRAPPER_WIDTH) / 2}rem)`
-                    : selectedDate
-                      ? 'none'
-                      : `translateX(${LAYOUT_CONFIG.CENTER_X_OFFSET}rem)`,
+                transform: isNonSelectionStep
+                  ? `translateX(-${LAYOUT_CONFIG.WRAPPER_WIDTH + (LAYOUT_CONFIG.BOX_WIDTH - LAYOUT_CONFIG.WRAPPER_WIDTH) / 2}rem)`
+                  : selectedDate
+                    ? 'none'
+                    : `translateX(${LAYOUT_CONFIG.CENTER_X_OFFSET}rem)`,
               }}
             >
               {/* Calendar Block (344 x dynamic) */}
@@ -105,7 +132,9 @@ function App() {
                 className="flex-shrink-0 flex flex-col"
                 style={{
                   width: `${LAYOUT_CONFIG.CALENDAR_WIDTH}rem`,
-                  ...(step === 'form' ? { height: 0, overflow: 'hidden' } : {}),
+                  ...(isNonSelectionStep
+                    ? { height: 0, overflow: 'hidden' }
+                    : {}),
                 }}
               >
                 <DatePicker
@@ -124,12 +153,12 @@ function App() {
               <div
                 className={clsx(
                   'w-[1px] bg-white-25 flex-shrink-0 mx-[0.5rem] mt-[1.75rem] transition-all duration-700 ease-in-out',
-                  selectedDate && step !== 'form'
+                  selectedDate && step !== 'form' && step !== 'success'
                     ? 'opacity-100'
                     : 'opacity-0 pointer-events-none',
                 )}
                 style={
-                  step === 'form'
+                  isNonSelectionStep
                     ? {}
                     : {
                         height: `${LAYOUT_CONFIG.getContentHeight(calendarRows) - 1.75}rem`,
@@ -141,15 +170,14 @@ function App() {
               <div
                 className={clsx(
                   'flex-shrink-0 w-[16.25rem] overflow-hidden transition-opacity duration-700 ease-in-out',
-                  selectedDate && step !== 'form'
+                  selectedDate && step !== 'form' && step !== 'success'
                     ? 'opacity-100 visible'
                     : 'opacity-0 invisible pointer-events-none',
                 )}
                 style={{
-                  height:
-                    step === 'form'
-                      ? 0
-                      : `${LAYOUT_CONFIG.getContentHeight(calendarRows)}rem`,
+                  height: isNonSelectionStep
+                    ? 0
+                    : `${LAYOUT_CONFIG.getContentHeight(calendarRows)}rem`,
                 }}
               >
                 <SlotPanel
@@ -161,18 +189,38 @@ function App() {
                 />
               </div>
 
-              {/* Booking Form View (Sliding from Right) */}
+              {/* Booking Form & Success View (Sliding from Right) */}
               <div
                 className={clsx(
                   'flex-shrink-0 w-[43.75rem] transition-all duration-700 ease-in-out px-8 pt-[1.75rem]',
-                  step === 'form'
+                  isNonSelectionStep
                     ? 'opacity-100 visible'
                     : 'opacity-0 invisible pointer-events-none',
                 )}
               >
                 {selectedDateObj && draft.slotId && (
                   <div className="flex flex-col items-center w-full">
-                    <BookingForm onBack={handleBack} onSubmit={handleConfirm} />
+                    {step === 'form' && (
+                      <BookingForm
+                        onBack={handleBack}
+                        onSubmit={handleConfirm}
+                        isLoading={bookingMutation.isPending}
+                        mutationError={
+                          bookingMutation.isError
+                            ? bookingMutation.error?.message
+                            : null
+                        }
+                      />
+                    )}
+                    {step === 'success' && (
+                      <SuccessScreen
+                        date={selectedDateObj}
+                        slot={draft.slotId}
+                        timezone={timezone}
+                        name={draft.name}
+                        onBookAnother={handleBookAnother}
+                      />
+                    )}
                   </div>
                 )}
               </div>
@@ -182,10 +230,10 @@ function App() {
             <div
               className={clsx(
                 'absolute bottom-[24px] transition-[left,transform] duration-700 ease-in-out z-20 -translate-x-1/2',
-                (step === 'form' || !selectedDate) && 'left-1/2',
+                (isNonSelectionStep || !selectedDate) && 'left-1/2',
               )}
               style={
-                selectedDate && step !== 'form'
+                selectedDate && !isNonSelectionStep
                   ? { left: `${LAYOUT_CONFIG.COOKIE_SETTINGS_LEFT}rem` }
                   : {}
               }
