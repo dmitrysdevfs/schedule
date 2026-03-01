@@ -9,9 +9,8 @@ import { parseISO } from 'date-fns'
 
 const LAYOUT_CONFIG = {
   BOX_WIDTH: 43.75, // 700px
-  BOX_SHORT_HEIGHT: 33.375, // 534px
-  BOX_MIN_HEIGHT: 36.625, // 586px
-  BOX_LONG_HEIGHT: 39.875, // 638px
+  ROW_HEIGHT: 3.25,
+  BOX_BASE_HEIGHT: 20.375,
   WRAPPER_WIDTH: 38.8125, // 621px
   CALENDAR_WIDTH: 21.5, // 344px
   get CENTER_X_OFFSET() {
@@ -21,14 +20,10 @@ const LAYOUT_CONFIG = {
   COOKIE_SETTINGS_LEFT: 13.21875, // 211.5px
   TRANSITION_DURATION: 700,
   getContentHeight(rows) {
-    if (rows === 6) return 32.5 // 520px
-    if (rows === 5) return 29.25 // 468px
-    return 26 // 416px
+    return rows * this.ROW_HEIGHT - 0.5 + 13.5 // Adding space for header/footer inside content area
   },
   getBoxHeight(rows) {
-    if (rows === 6) return this.BOX_LONG_HEIGHT
-    if (rows === 5) return this.BOX_MIN_HEIGHT
-    return this.BOX_SHORT_HEIGHT
+    return this.BOX_BASE_HEIGHT + rows * this.ROW_HEIGHT
   },
 }
 
@@ -171,8 +166,8 @@ function App() {
               style={{
                 width: `${LAYOUT_CONFIG.WRAPPER_WIDTH}rem`,
                 transform: selectedDate
-                  ? `translateX(-${LAYOUT_CONFIG.CENTER_X_OFFSET}rem)`
-                  : 'none',
+                  ? 'none'
+                  : `translateX(${LAYOUT_CONFIG.CENTER_X_OFFSET}rem)`,
               }}
             >
               {/* Calendar Block (344 x dynamic) */}

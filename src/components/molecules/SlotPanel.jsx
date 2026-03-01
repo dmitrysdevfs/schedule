@@ -5,8 +5,6 @@ import { generateTimeSlots } from '../../utils/calendar'
 import Button from '../atoms/Button'
 import { format, parseISO } from 'date-fns'
 import { clsx } from 'clsx'
-const TIME_SLOTS = generateTimeSlots()
-
 const SlotPanel = ({
   selectedDate,
   selectedSlot,
@@ -14,7 +12,7 @@ const SlotPanel = ({
   onNext,
   className,
 }) => {
-  const slots = TIME_SLOTS
+  const slots = useMemo(() => generateTimeSlots(), [])
 
   // Format date for header: "Thursday, February 12"
   const dateHeader = useMemo(() => {

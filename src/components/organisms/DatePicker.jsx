@@ -221,8 +221,7 @@ const DatePicker = ({
       <div
         className="w-full transition-all duration-700 ease-in-out overflow-hidden"
         style={{
-          height:
-            rowCount === 6 ? '19rem' : rowCount === 5 ? '15.75rem' : '12.5rem',
+          height: `${rowCount * 3.25 - 0.5}rem`,
         }}
       >
         <div className="grid grid-cols-7 gap-[8px] justify-items-center">
