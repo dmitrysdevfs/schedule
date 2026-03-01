@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import SlotButton from '../atoms/SlotButton'
 import { generateTimeSlots } from '../../utils/calendar'
 import Button from '../atoms/Button'
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 import { clsx } from 'clsx'
 const SlotPanel = ({
   selectedDate,
@@ -16,7 +16,7 @@ const SlotPanel = ({
 
   // Format date for header: "Thursday, February 12"
   const dateHeader = useMemo(() => {
-    return selectedDate ? format(parseISO(selectedDate), 'eeee, MMMM d') : ''
+    return selectedDate ? format(selectedDate, 'eeee, MMMM d') : ''
   }, [selectedDate])
 
   return (
@@ -66,7 +66,7 @@ const SlotPanel = ({
 }
 
 SlotPanel.propTypes = {
-  selectedDate: PropTypes.string,
+  selectedDate: PropTypes.instanceOf(Date),
   selectedSlot: PropTypes.string,
   onSlotSelect: PropTypes.func.isRequired,
   onNext: PropTypes.func.isRequired,

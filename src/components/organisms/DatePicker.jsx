@@ -6,7 +6,6 @@ import {
   subMonths,
   isSameMonth,
   startOfMonth,
-  parseISO,
 } from 'date-fns'
 import { generateCalendarMonth } from '../../utils/calendar'
 import CalendarDay from '../atoms/CalendarDay'
@@ -39,6 +38,7 @@ TimeDisplay.propTypes = {
 
 const DatePicker = ({
   selectedDate,
+  selectedDateObj,
   setSelectedDate,
   viewDate,
   setViewDate,
@@ -63,13 +63,8 @@ const DatePicker = ({
   }, [today])
 
   const calendarDays = useMemo(
-    () =>
-      generateCalendarMonth(
-        viewDate,
-        selectedDate ? parseISO(selectedDate) : null,
-        today,
-      ),
-    [viewDate, selectedDate, today],
+    () => generateCalendarMonth(viewDate, selectedDateObj, today),
+    [viewDate, selectedDateObj, today],
   )
   // Only show the number of rows needed for this month (28, 35 or 42 days)
   const visibleDays = useMemo(() => {
@@ -338,6 +333,7 @@ const DatePicker = ({
 
 DatePicker.propTypes = {
   selectedDate: PropTypes.string,
+  selectedDateObj: PropTypes.instanceOf(Date),
   setSelectedDate: PropTypes.func.isRequired,
   viewDate: PropTypes.instanceOf(Date).isRequired,
   setViewDate: PropTypes.func.isRequired,

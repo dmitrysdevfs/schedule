@@ -22,8 +22,12 @@ function App() {
 
   const [demoDay, setDemoDay] = useState(null)
 
-  // Memoize viewDate once to avoid redundant parsing in children
+  // Memoize dates once to avoid redundant parsing in children
   const viewDate = useMemo(() => parseISO(viewDateIso), [viewDateIso])
+  const selectedDateObj = useMemo(
+    () => (selectedDate ? parseISO(selectedDate) : null),
+    [selectedDate],
+  )
 
   // Calculate how many rows the current viewMonth needs (4, 5, or 6)
   const calendarRows = useMemo(() => getMonthRowCount(viewDate), [viewDate])
@@ -158,6 +162,7 @@ function App() {
               >
                 <DatePicker
                   selectedDate={selectedDate}
+                  selectedDateObj={selectedDateObj}
                   setSelectedDate={handleDateSelect}
                   viewDate={viewDate}
                   setViewDate={setViewDate}
@@ -195,7 +200,7 @@ function App() {
                 }}
               >
                 <SlotPanel
-                  selectedDate={selectedDate}
+                  selectedDate={selectedDateObj}
                   selectedSlot={draft.slotId}
                   onSlotSelect={handleSlotSelect}
                   onNext={handleNext}
@@ -206,13 +211,15 @@ function App() {
 
             {/* Cookie Settings (Moving Footer) - Fixed 24px from bottom edge */}
             <div
-              className="absolute bottom-[24px] transition-[left,transform] duration-700 ease-in-out z-20"
-              style={{
-                left: selectedDate
-                  ? `${LAYOUT_CONFIG.COOKIE_SETTINGS_LEFT}rem`
-                  : '50%',
-                transform: 'translateX(-50%)',
-              }}
+              className={clsx(
+                'absolute bottom-[24px] transition-[left,transform] duration-700 ease-in-out z-20 -translate-x-1/2',
+                !selectedDate && 'left-1/2',
+              )}
+              style={
+                selectedDate
+                  ? { left: `${LAYOUT_CONFIG.COOKIE_SETTINGS_LEFT}rem` }
+                  : {}
+              }
             >
               <button className="text-primary-200 text-[14px] leading-[18px] font-medium hover:underline">
                 Cookie settings

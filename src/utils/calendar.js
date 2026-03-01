@@ -24,8 +24,9 @@ export const generateCalendarMonth = (
   viewDate,
   selectedDate,
   referenceDate,
+  options = { weekStartsOn: 1 },
 ) => {
-  const start = startOfWeek(startOfMonth(viewDate), { weekStartsOn: 1 }) // Monday start
+  const start = startOfWeek(startOfMonth(viewDate), options)
   const days = eachDayOfInterval({
     start,
     end: addDays(start, 41), // Always 42 days (exactly 6 weeks)
@@ -81,10 +82,11 @@ export const generateTimeSlots = (
  * Calculates how many rows (weeks) are needed to display a given month in a 7-column grid.
  *
  * @param {Date} date - Any date within the month
+ * @param {Object} options - date-fns options (e.g. weekStartsOn)
  * @returns {number} Number of rows: 4, 5 or 6
  */
-export const getMonthRowCount = (date) => {
-  const startOfGrid = startOfWeek(startOfMonth(date), { weekStartsOn: 1 })
+export const getMonthRowCount = (date, options = { weekStartsOn: 1 }) => {
+  const startOfGrid = startOfWeek(startOfMonth(date), options)
   const day36 = addDays(startOfGrid, 35) // Start of the 6th week
   const day29 = addDays(startOfGrid, 28) // Start of the 5th week
 
