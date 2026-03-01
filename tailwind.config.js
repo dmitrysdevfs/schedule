@@ -27,6 +27,7 @@ export default {
           75: 'rgb(253 252 252 / 0.75)',
           50: 'rgb(253 252 252 / 0.50)',
           25: 'rgb(253 252 252 / 0.25)',
+          10: 'rgb(253 252 252 / 0.10)',
         },
         grey: {
           100: '#E4E2DD',
@@ -51,6 +52,25 @@ export default {
       },
       boxShadow: {
         'button-pressed': 'inset 5px 6px 4px rgba(12, 17, 31, 0.3)',
+      },
+      keyframes: {
+        slideInFromRight: {
+          '0%': { transform: 'translateX(2rem)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideInFromLeft: {
+          '0%': { transform: 'translateX(-1rem)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+      },
+      animation: {
+        'fade-in': 'fadeIn 500ms both',
+        'slide-in-right': 'slideInFromRight 500ms both',
+        'slide-in-left': 'slideInFromLeft 500ms both',
       },
     },
   },

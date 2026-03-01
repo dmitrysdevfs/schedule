@@ -12,12 +12,14 @@ export const useBookingStore = create()(
         comment: '',
       },
       selectedDate: null,
+      viewDate: new Date().toISOString(),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       setDraft: (field, value) =>
         set((state) => ({
           draft: { ...state.draft, [field]: value },
         })),
       setSelectedDate: (date) => set({ selectedDate: date }),
+      setViewDate: (date) => set({ viewDate: date.toISOString() }),
       setTimezone: (tz) => set({ timezone: tz }),
       resetDraft: () =>
         set({

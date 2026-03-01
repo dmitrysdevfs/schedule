@@ -6,6 +6,7 @@ import {
   subMonths,
   isSameMonth,
   startOfMonth,
+  isSameDay,
 } from 'date-fns'
 import { generateCalendarMonth } from '../../utils/calendar'
 import CalendarDay from '../atoms/CalendarDay'
@@ -37,12 +38,15 @@ TimeDisplay.propTypes = {
 }
 
 const DatePicker = ({
-  selectedDate,
+  selectedDateObj,
   setSelectedDate,
+  viewDate,
+  setViewDate,
   timezone,
   setTimezone,
+  rowCount = 5,
+  className,
 }) => {
-  const [viewDate, setViewDate] = useState(new Date())
   const [isTzOpen, setIsTzOpen] = useState(false)
   const [focusedTzIndex, setFocusedTzIndex] = useState(-1)
 
@@ -59,14 +63,13 @@ const DatePicker = ({
   }, [today])
 
   const calendarDays = useMemo(
-    () =>
-      generateCalendarMonth(
-        viewDate,
-        selectedDate ? new Date(selectedDate) : null,
-        today,
-      ),
-    [viewDate, selectedDate, today],
+    () => generateCalendarMonth(viewDate, selectedDateObj, today),
+    [viewDate, selectedDateObj, today],
   )
+  // Only show the number of rows needed for this month (28, 35 or 42 days)
+  const visibleDays = useMemo(() => {
+    return calendarDays.slice(0, rowCount * 7)
+  }, [calendarDays, rowCount])
 
   const handlePrevMonth = () => {
     if (canGoPrev) setViewDate(subMonths(viewDate, 1))
@@ -75,7 +78,7 @@ const DatePicker = ({
 
   const handleDateClick = (date) => {
     const dateIso = format(date, 'yyyy-MM-dd')
-    if (selectedDate === dateIso) {
+    if (selectedDateObj && isSameDay(selectedDateObj, date)) {
       setSelectedDate(null)
     } else {
       setSelectedDate(dateIso)
@@ -136,9 +139,19 @@ const DatePicker = ({
   const canGoPrev = !isSameMonth(viewDate, todayMonth)
 
   return (
-    <div className="w-full max-w-[440px] bg-secondary-800 rounded-3xl p-8 shadow-2xl border border-white-25 relative">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-10 px-2">
+    <div
+      className={clsx(
+        'w-full select-none transition-all duration-700 ease-in-out flex flex-col',
+        className,
+      )}
+    >
+      {/* Title */}
+      <h4 className="text-[20px] font-bold text-white-100 h-[24px] mb-[24px]">
+        Select a Date & Time
+      </h4>
+
+      {/* Month Navigation Header */}
+      <div className="flex items-center justify-between h-[44px] mb-[24px]">
         {/* Prev Month Button */}
         <button
           onClick={handlePrevMonth}
@@ -146,9 +159,9 @@ const DatePicker = ({
           className={clsx(
             'flex items-center justify-center rounded-full transition-all duration-200',
             {
-              'w-14 h-14 text-white-25 cursor-not-allowed opacity-50':
+              'w-11 h-11 text-white-25 cursor-not-allowed opacity-50':
                 !canGoPrev,
-              'w-14 h-14 bg-primary-500/20 text-primary-50 hover:bg-primary-500/30':
+              'w-11 h-11 bg-primary-500/20 text-primary-50 hover:bg-primary-500/30':
                 canGoPrev,
             },
           )}
@@ -166,14 +179,14 @@ const DatePicker = ({
         </button>
 
         {/* Month Year Label */}
-        <h3 className="text-xl font-medium text-white-100 text-center flex-1">
+        <h3 className="text-base font-medium text-white-100 text-center flex-1 leading-[24px]">
           {format(viewDate, 'MMMM yyyy')}
         </h3>
 
-        {/* Next Month Button (Large Active Circle) */}
+        {/* Next Month Button */}
         <button
           onClick={handleNextMonth}
-          className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-500/20 text-primary-50 hover:bg-primary-500/30 transition-all duration-200"
+          className="w-11 h-11 flex items-center justify-center rounded-full bg-primary-500/20 text-primary-50 hover:bg-primary-500/30 transition-all duration-200"
           aria-label="Next month"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -189,41 +202,48 @@ const DatePicker = ({
       </div>
 
       {/* WeekDays Labels */}
-      <div className="grid grid-cols-7 gap-3 mb-6">
+      <div className="grid grid-cols-7 gap-[8px] h-[16px] mb-[16px]">
         {weekDays.map((day) => (
           <div
             key={day}
-            className="text-center text-[12px] leading-4 font-normal tracking-widest text-white-100"
+            className="text-center text-[12px] leading-[16px] font-normal tracking-widest text-white-100 uppercase"
           >
             {day}
           </div>
         ))}
       </div>
 
-      {/* Days Grid */}
-      <div className="grid grid-cols-7 gap-3 justify-items-center">
-        {calendarDays.map((day) => (
-          <CalendarDay
-            key={day.date.getTime()}
-            day={day.dayNumber}
-            isToday={day.isToday}
-            isSelected={day.isSelected}
-            isDisabled={day.isDisabled}
-            isOutsideMonth={day.isOutsideMonth}
-            // Logic: Available days get bubbles (Active state). Today always has a dot.
-            isActive={!day.isDisabled && !day.isOutsideMonth}
-            onClick={() =>
-              !day.isOutsideMonth &&
-              !day.isDisabled &&
-              handleDateClick(day.date)
-            }
-          />
-        ))}
+      <div
+        className="w-full transition-all duration-700 ease-in-out overflow-hidden"
+        style={{
+          height: `${rowCount * 3.25 - 0.5}rem`,
+        }}
+      >
+        <div className="grid grid-cols-7 gap-[8px] justify-items-center">
+          {visibleDays.map((day) => (
+            <CalendarDay
+              key={day.date.getTime()}
+              day={day.dayNumber}
+              isToday={day.isToday}
+              isSelected={day.isSelected}
+              isDisabled={day.isDisabled}
+              isOutsideMonth={day.isOutsideMonth}
+              isActive={!day.isDisabled && !day.isOutsideMonth}
+              onClick={() =>
+                !day.isOutsideMonth &&
+                !day.isDisabled &&
+                handleDateClick(day.date)
+              }
+            />
+          ))}
+        </div>
       </div>
 
       {/* Timezone Footer */}
-      <div className="mt-10 pt-8 border-t border-white-25 relative">
-        <h4 className="text-sm font-bold text-white-100 mb-4">Time zone</h4>
+      <div className="relative mt-[24px]">
+        <h5 className="text-[14px] font-bold text-white-100 mb-[6px]">
+          Time zone
+        </h5>
         <div
           className="flex items-center gap-3 text-sm text-white-100 relative"
           onKeyDown={handleTzKeyDown}
@@ -312,10 +332,14 @@ const DatePicker = ({
 }
 
 DatePicker.propTypes = {
-  selectedDate: PropTypes.string,
+  selectedDateObj: PropTypes.instanceOf(Date),
   setSelectedDate: PropTypes.func.isRequired,
+  viewDate: PropTypes.instanceOf(Date).isRequired,
+  setViewDate: PropTypes.func.isRequired,
   timezone: PropTypes.string.isRequired,
   setTimezone: PropTypes.func.isRequired,
+  rowCount: PropTypes.number,
+  className: PropTypes.string,
 }
 
 export default DatePicker

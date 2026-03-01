@@ -1,18 +1,49 @@
-import { useState } from 'react'
-import Button from './components/atoms/Button'
-import SlotButton from './components/atoms/SlotButton'
-import CalendarDay from './components/atoms/CalendarDay'
+import { useState, useMemo } from 'react'
 import DatePicker from './components/organisms/DatePicker'
+import SlotPanel from './components/molecules/SlotPanel'
+import CalendarDay from './components/atoms/CalendarDay'
 import { useBookingStore } from './store/useBookingStore'
+import { clsx } from 'clsx'
+import { getMonthRowCount } from './utils/calendar'
+import { parseISO } from 'date-fns'
+import { LAYOUT_CONFIG } from './constants/layout'
 
 function App() {
-  const { selectedDate, setSelectedDate, timezone, setTimezone } =
-    useBookingStore()
-  const [selectedSlot, setSelectedSlot] = useState(null)
+  const {
+    selectedDate,
+    setSelectedDate,
+    viewDate: viewDateIso,
+    setViewDate,
+    timezone,
+    setTimezone,
+    draft,
+    setDraft,
+  } = useBookingStore()
+
   const [demoDay, setDemoDay] = useState(null)
 
-  const handleSlotClick = (time) => {
-    setSelectedSlot((prev) => (prev === time ? null : time))
+  // Memoize dates once to avoid redundant parsing in children
+  const viewDate = useMemo(() => parseISO(viewDateIso), [viewDateIso])
+  const selectedDateObj = useMemo(
+    () => (selectedDate ? parseISO(selectedDate) : null),
+    [selectedDate],
+  )
+
+  // Calculate how many rows the current viewMonth needs (4, 5, or 6)
+  const calendarRows = useMemo(() => getMonthRowCount(viewDate), [viewDate])
+
+  const handleDateSelect = (date) => {
+    setSelectedDate(date)
+    setDraft('slotId', null) // Reset slot when date changes
+  }
+
+  const handleSlotSelect = (slot) => {
+    setDraft('slotId', draft.slotId === slot ? null : slot)
+  }
+
+  const handleNext = () => {
+    // TODO: Implement booking submission API call in Stage 6
+    console.log('Booking confirmed', { selectedDate, slot: draft.slotId })
   }
 
   return (
@@ -43,87 +74,8 @@ function App() {
             </div>
           </div>
         </section>
-        <section className="space-y-8">
-          <h2 className="text-xl font-medium border-b border-secondary-800 pb-2">
-            Buttons (Pill Shape)
-          </h2>
 
-          <div className="space-y-6">
-            <h3 className="text-sm text-secondary-400 uppercase tracking-widest">
-              Big (60px)
-            </h3>
-            <div className="flex flex-wrap gap-4 items-center">
-              <Button size="lg">Primary</Button>
-              <Button size="lg" variant="secondary">
-                Secondary
-              </Button>
-              <Button size="lg" isDisabled>
-                Primary Disabled
-              </Button>
-              <Button size="lg" variant="secondary" isDisabled>
-                Secondary Disabled
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <h3 className="text-sm text-secondary-400 uppercase tracking-widest">
-              Small (42px)
-            </h3>
-            <div className="flex flex-wrap gap-4 items-center">
-              <Button size="sm">Primary</Button>
-              <Button size="sm" variant="secondary">
-                Secondary
-              </Button>
-              <Button size="sm" isDisabled>
-                Primary Disabled
-              </Button>
-              <Button size="sm" variant="secondary" isDisabled>
-                Secondary Disabled
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        {/* Time Slots Section */}
-        <section className="space-y-6">
-          <h2 className="text-xl font-medium border-b border-white-25 pb-2">
-            Time Slots
-          </h2>
-          <div className="flex gap-4">
-            <SlotButton
-              time="09:00"
-              isSelected={selectedSlot === '09:00'}
-              onClick={() => handleSlotClick('09:00')}
-            />
-            <SlotButton
-              time="10:00"
-              isSelected={selectedSlot === '10:00'}
-              onClick={() => handleSlotClick('10:00')}
-            />
-            <SlotButton time="11:00" isDisabled />
-          </div>
-          <p className="text-xs text-secondary-50">
-            Selected: {selectedSlot || 'None'}
-          </p>
-        </section>
-
-        {/* Date Picker Section */}
-        <section className="space-y-6">
-          <h2 className="text-xl font-medium border-b border-white-25 pb-2">
-            Date Picker (Organism)
-          </h2>
-          <div className="flex justify-center md:justify-start">
-            <DatePicker
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              timezone={timezone}
-              setTimezone={setTimezone}
-            />
-          </div>
-        </section>
-
-        {/* Calendar Section */}
+        {/* Calendar Atoms Showcase */}
         <section className="space-y-6">
           <h2 className="text-xl font-medium border-b border-white-25 pb-2">
             Calendar Days (44x44)
@@ -180,6 +132,97 @@ function App() {
                 isSelected={demoDay === 4}
                 onClick={() => setDemoDay((prev) => (prev === 4 ? null : 4))}
               />
+            </div>
+          </div>
+        </section>
+
+        {/* Booking Experience Section - High Fidelity */}
+        <section className="space-y-8 flex flex-col items-center">
+          <div
+            className="bg-secondary-800 rounded-3xl border border-white-25 shadow-2xl overflow-hidden relative flex flex-col items-center justify-start pt-14 pb-[66px] transition-all duration-700 ease-in-out"
+            style={{
+              width: `${LAYOUT_CONFIG.BOX_WIDTH}rem`,
+              height: `${LAYOUT_CONFIG.getBoxHeight(calendarRows)}rem`,
+            }}
+          >
+            {/* Animation Wrapper for Calendar and Slots */}
+            <div
+              className="flex items-start transition-all duration-700 ease-in-out"
+              style={{
+                width: `${LAYOUT_CONFIG.WRAPPER_WIDTH}rem`,
+                transform: selectedDate
+                  ? 'none'
+                  : `translateX(${LAYOUT_CONFIG.CENTER_X_OFFSET}rem)`,
+              }}
+            >
+              {/* Calendar Block (344 x dynamic) */}
+              <div
+                className="flex-shrink-0 flex flex-col"
+                style={{ width: `${LAYOUT_CONFIG.CALENDAR_WIDTH}rem` }}
+              >
+                <DatePicker
+                  selectedDateObj={selectedDateObj}
+                  setSelectedDate={handleDateSelect}
+                  viewDate={viewDate}
+                  setViewDate={setViewDate}
+                  timezone={timezone}
+                  setTimezone={setTimezone}
+                  rowCount={calendarRows}
+                  className="w-[22.25rem]"
+                />
+              </div>
+
+              {/* Vertical Divider (Conditional Visibility) */}
+              <div
+                className={clsx(
+                  'w-[1px] bg-white-25 mx-[0.5rem] transition-all duration-700 ease-in-out',
+                  {
+                    'opacity-100': selectedDate,
+                    'opacity-0 pointer-events-none': !selectedDate,
+                  },
+                )}
+                style={{
+                  height: `${LAYOUT_CONFIG.getContentHeight(calendarRows)}rem`,
+                }}
+              />
+
+              {/* Slot Panel Column (Synchronized Height) */}
+              <div
+                className={clsx(
+                  'flex-shrink-0 w-[16.25rem] transition-all duration-700 ease-in-out',
+                  selectedDate
+                    ? 'opacity-100 visible'
+                    : 'opacity-0 invisible pointer-events-none',
+                )}
+                style={{
+                  height: `${LAYOUT_CONFIG.getContentHeight(calendarRows)}rem`,
+                }}
+              >
+                <SlotPanel
+                  selectedDate={selectedDateObj}
+                  selectedSlot={draft.slotId}
+                  onSlotSelect={handleSlotSelect}
+                  onNext={handleNext}
+                  className="w-[16.25rem]"
+                />
+              </div>
+            </div>
+
+            {/* Cookie Settings (Moving Footer) - Fixed 24px from bottom edge */}
+            <div
+              className={clsx(
+                'absolute bottom-[24px] transition-[left,transform] duration-700 ease-in-out z-20 -translate-x-1/2',
+                !selectedDate && 'left-1/2',
+              )}
+              style={
+                selectedDate
+                  ? { left: `${LAYOUT_CONFIG.COOKIE_SETTINGS_LEFT}rem` }
+                  : {}
+              }
+            >
+              <button className="text-primary-200 text-[14px] leading-[18px] font-medium hover:underline">
+                Cookie settings
+              </button>
             </div>
           </div>
         </section>

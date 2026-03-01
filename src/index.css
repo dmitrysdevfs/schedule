@@ -25,3 +25,20 @@ body {
 #root {
   width: 100%;
 }
+
+/* Custom Scrollbar for Time Slots */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-white-10 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-white-25;
+}
