@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
 import { Clock, Camera, Calendar, Globe } from 'lucide-react'
 import { format } from 'date-fns'
+import { getTimezoneLabel } from '../../utils/datetime'
 
 const BookingHeader = ({ step, date, slot, timezone }) => {
-  const isFormStep = step === 'form'
+  const isFormStep = step === 'form' || step === 'success'
 
   // Format the time range (e.g., 10:00 - 10:30)
   let timeRange = ''
@@ -39,7 +40,7 @@ const BookingHeader = ({ step, date, slot, timezone }) => {
 
         {/* Dynamic Row: Visible ONLY in form step (Centered content block, single line) */}
         {isFormStep && (
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-white-50 text-[16px] leading-[24px] animate-fade-in pt-3 mt-1">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-white-50 text-[14px] leading-[20px] animate-fade-in pt-3 mt-1">
             <div className="flex items-center gap-2">
               <Calendar size={18} className="text-white-50" />
               <span className="whitespace-nowrap">
@@ -49,7 +50,7 @@ const BookingHeader = ({ step, date, slot, timezone }) => {
             <div className="flex items-center gap-2">
               <Globe size={18} className="text-white-50" />
               <span className="whitespace-nowrap">
-                {timezone.replace(/_/g, ' ')}
+                {getTimezoneLabel(timezone)}
               </span>
             </div>
           </div>

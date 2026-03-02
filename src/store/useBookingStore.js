@@ -11,7 +11,7 @@ export const useBookingStore = create()(
         guests: '',
         comment: '',
       },
-      step: 'selection', // 'selection' | 'form'
+      step: 'selection', // 'selection' | 'form' | 'success'
       selectedDate: null,
       viewDate: new Date().toISOString(),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,

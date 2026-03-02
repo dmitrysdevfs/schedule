@@ -11,8 +11,14 @@ export const handlers = [
   http.post('/api/book', async ({ request }) => {
     const data = await request.json()
     console.log('Booking received:', data)
+    // Simulate network latency
+    await new Promise((resolve) => setTimeout(resolve, 600))
     return HttpResponse.json(
-      { success: true, message: 'Invite sent' },
+      {
+        success: true,
+        bookingId: `bk_${Date.now()}`,
+        message: 'Invite sent',
+      },
       { status: 201 },
     )
   }),

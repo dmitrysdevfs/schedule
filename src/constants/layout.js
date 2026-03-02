@@ -10,6 +10,7 @@ export const LAYOUT_CONFIG = {
   FIELD_WIDTH: 21.875, // 350px
   INPUT_HEIGHT: 2.5, // 40px
   TEXTAREA_HEIGHT: 5.0, // 80px
+  SUCCESS_CONTENT_WIDTH: 28, // 448px — wide enough for single-line subtext
 
   get CENTER_X_OFFSET() {
     return (this.WRAPPER_WIDTH - this.CALENDAR_WIDTH) / 2
