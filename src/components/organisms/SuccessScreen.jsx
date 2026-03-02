@@ -2,22 +2,9 @@ import PropTypes from 'prop-types'
 import { Calendar, Globe, User, CheckCircle2 } from 'lucide-react'
 import { format } from 'date-fns'
 import { LAYOUT_CONFIG } from '../../constants/layout'
+import { getTimezoneLabel } from '../../utils/datetime'
 
 const EVENT_TITLE = 'Schedule eClosing'
-
-// Derive a human-readable timezone label (e.g. "Eastern European Standard Time")
-function getTimezoneLabel(tz) {
-  try {
-    return (
-      Intl.DateTimeFormat('en', { timeZoneName: 'long', timeZone: tz })
-        .formatToParts(new Date())
-        .find((p) => p.type === 'timeZoneName')?.value ?? tz.replace(/_/g, ' ')
-    )
-  } catch {
-    return tz.replace(/_/g, ' ')
-  }
-}
-
 const SuccessScreen = ({ date, slot, timezone, name, onBookAnother }) => {
   let timeRange = ''
   let fullDate = ''

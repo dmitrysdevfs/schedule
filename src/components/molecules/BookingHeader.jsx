@@ -1,18 +1,7 @@
 import PropTypes from 'prop-types'
 import { Clock, Camera, Calendar, Globe } from 'lucide-react'
 import { format } from 'date-fns'
-
-function getTimezoneLabel(tz) {
-  try {
-    return (
-      Intl.DateTimeFormat('en', { timeZoneName: 'long', timeZone: tz })
-        .formatToParts(new Date())
-        .find((p) => p.type === 'timeZoneName')?.value ?? tz.replace(/_/g, ' ')
-    )
-  } catch {
-    return tz.replace(/_/g, ' ')
-  }
-}
+import { getTimezoneLabel } from '../../utils/datetime'
 
 const BookingHeader = ({ step, date, slot, timezone }) => {
   const isFormStep = step === 'form' || step === 'success'
