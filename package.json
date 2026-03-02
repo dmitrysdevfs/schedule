@@ -2,6 +2,7 @@
   "name": "booking-consultation",
   "private": true,
   "version": "1.0.0",
+  "author": "Dmytro Salyakin",
   "type": "module",
   "scripts": {
     "dev": "vite",
